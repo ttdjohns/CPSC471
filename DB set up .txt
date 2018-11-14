@@ -1,0 +1,193 @@
+drop database ProjectProDB;
+create database ProjectProDB;
+create table ProjectProDB.WORKERS
+	(Worker_ID integer NOT NULL,
+    Hours_assigned integer NOT NULL,
+    Start_date date not null,
+    First_name VARCHAR(20) NOT NULL,
+    Last_name VARCHAR(40) NOT NULL,
+    Worker_type varchar(20) not null,
+    primary key (Worker_ID)
+    );
+create table ProjectProDB.WORKER_EMAILS
+	(Worker_ID integer not null,
+    Email varchar(50) not null,
+    primary key (Worker_ID, Email),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
+    );
+create table ProjectProDB.WORKER_PHONE_NUMBERS
+	(Worker_ID integer not null,
+    Phone_number varchar(20) not null,
+    primary key (Worker_ID, Phone_number),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
+    );
+create table ProjectProDB.VOLUNTEERS
+	(Worker_ID integer not null,
+    Max_assignable_hours integer,
+    primary key (Worker_ID),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
+    );
+create table ProjectProDB.EMPLOYEES
+	(Worker_ID integer not null,
+    SSN CHAR(9) not null,
+    Salary integer not null,
+    primary key (Worker_ID),
+    unique (SSN),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade,
+    check (SSN regexp ('^[:digit:]+$'))
+    );
+    
+delimiter //
+create trigger ProjectProDB.EMPLOYEES_BI before insert on ProjectProDB.EMPLOYEES 
+	for each row 
+		begin 
+			-- declare mylength integer;
+			-- set mylength = length(new.SSN);
+            if new.SSN = 'A' then 
+				signal sqlstate '01000'
+                set message_text = 'this was an error';
+			end if;
+        end;//
+delimiter ;
+
+    
+create table ProjectProDB.TEAMS
+	(Team_ID integer not null,
+    Supervisor_ID integer not null,
+    primary key (Team_ID),
+    foreign key (Supervisor_ID) references ProjectProDB.EMPLOYEES (Worker_ID) on delete cascade on update cascade
+    );
+create table ProjectProDB.IS_PART_OF
+	(Worker_ID integer not null,
+    Team_ID integer not null,
+    primary key (Worker_ID, Team_ID),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade,
+    foreign key (Team_ID) references ProjectProDB.TEAMS (Team_ID) on delete cascade on update cascade
+    );
+
+create table ProjectProDB.TASKS
+	(Task_ID integer not null,
+    Task_Name varchar(20) not null,
+    Task_description varchar(200),
+    primary key (Task_ID)
+    );
+create table ProjectProDB.DESIRES
+	(Task_ID integer not null,
+    Worker_ID integer not null,
+    primary key (Task_ID, Worker_ID),
+    foreign key (Task_ID) references ProjectProDB.TASKS (Task_ID) on delete cascade on update cascade,
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
+    );
+    
+create table ProjectProDB.STRENGTHS
+	(Strength_ID integer not null,
+    Strength_name varchar(20) not null,
+    Strength_description varchar(200),
+    primary key (Strength_ID)
+    );    
+    
+create table ProjectProDB.ASSOCIATED_STRENGTHS
+	(Task_ID integer not null,
+    Strength_ID integer not null,
+    primary key (Task_ID, Strength_ID),
+    foreign key (Task_ID) references ProjectProDB.TASKS (Task_ID) on delete cascade on update cascade,
+    foreign key (Strength_ID) references ProjectProDB.STRENGTHS (Strength_ID) on delete cascade on update cascade
+    );
+    
+create table ProjectProDB.PROJECTS
+	(Project_ID integer not null,
+    Project_name VARCHAR(20) not null,
+    Project_description varchar(200),
+    primary key (Project_ID)
+    );
+    
+create table ProjectProDB.WORKS_ON
+	(Project_ID integer not null,
+    Team_ID integer not null,
+    primary key (Project_ID, Team_ID),
+    foreign key (Project_ID) references ProjectProDB.PROJECTS (Project_ID) on delete cascade on update cascade,
+    foreign key (Team_ID) references ProjectProDB.TEAMS (Team_ID) on delete cascade on update cascade
+    );
+    
+create table ProjectProDB.PROJECT_TASKS
+	(Worker_ID integer not null,
+    Task_ID integer not null,
+    Project_ID integer not null,
+    primary key (Worker_ID, Task_ID, Project_ID),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade,
+    foreign key (Task_ID) references ProjectProDB.TASKS (Task_ID) on delete cascade on update cascade,
+    foreign key (Project_ID) references ProjectProDB.PROJECTS (Project_ID) on delete cascade on update cascade
+    );
+    
+create table ProjectProDB.WORKER_HAS_STRENGTHS
+	(Worker_ID integer not null,
+    Strength_ID integer not null,
+    Strength_Rank integer not null,
+    primary key (Worker_ID, Strength_ID),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade,
+    foreign key (Strength_ID) references ProjectProDB.STRENGTHS (Strength_ID) on delete cascade on update cascade
+    );
+
+create table ProjectProDB.ACCOUNT_ACCESS
+	(Username varchar(20) not null,
+    Password varchar(20) not null,
+    Access_level integer not null,
+    Worker_ID integer not null,
+    primary key (Username),
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
+    );
+    
+create table ProjectProDB.CAUSES
+	(Cause_ID integer not null,
+    Cause_description varchar(200) not null,
+    primary key (Cause_ID)
+    );
+
+create table ProjectProDB.DEDICATED_TO
+	(Project_ID integer not null,
+    Cause_ID integer not null,
+    primary key (Project_ID, Cause_ID),
+    foreign key (Cause_ID) references ProjectProDB.CAUSES (Cause_ID) on delete cascade on update cascade,
+	foreign key (Project_ID) references ProjectProDB.PROJECTS (Project_ID) on delete cascade on update cascade
+    );
+
+create table ProjectProDB.DONORS
+	(Donor_ID integer not null,
+    Donor_name varchar(20) not null,
+    Mailing_address varchar(50),
+    primary key (Donor_ID)
+    );
+
+create table ProjectProDB.DONOR_PHONES
+	(Donor_ID integer not null,
+    Phone_number varchar(20) not null,
+    primary key (Donor_ID, Phone_number),
+    foreign key (Donor_ID) references ProjectProDB.DONORS (Donor_ID) on delete cascade on update cascade
+    );
+
+create table ProjectProDB.DONOR_EMAILS
+	(Donor_ID integer not null,
+    Email varchar(50) not null,
+    primary key (Donor_ID, Email),
+    foreign key (Donor_ID) references ProjectProDB.DONORS (Donor_ID) on delete cascade on update cascade
+    );
+
+create table ProjectProDB.DONATIONS
+	(Donation_ID integer not null,
+    Cause_ID integer not null,
+    Donor_ID integer not null,
+    Amount integer not null,
+    primary key (Donation_ID),
+    foreign key (Cause_ID) references ProjectProDB.CAUSES (Cause_ID) on delete cascade on update cascade,
+    foreign key (Donor_ID) references ProjectProDB.DONORS (Donor_ID) on delete cascade on update cascade
+    );
+    
+
+    
+insert into ProjectProDB.WORKERS 
+values (1, 1, '2000-01-01', 'Trent', 'Johnston', 'Employee');
+insert into ProjectProDB.EMPLOYEES
+values (1, 'A', 2);
+select * from ProjectProDB.EMPLOYEES;
+
+    
