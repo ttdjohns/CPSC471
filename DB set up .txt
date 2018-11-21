@@ -22,33 +22,33 @@ create table ProjectProDB.WORKER_PHONE_NUMBERS
     foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
     );
 create table ProjectProDB.VOLUNTEERS
-	(Worker_ID integer not null,
-    Max_assignable_hours integer,
+	(Worker_ID INT not null,
+    Max_assignable_hours INT,
     primary key (Worker_ID),
     foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
     );
 create table ProjectProDB.EMPLOYEES
-	(Worker_ID integer not null,
-    SSN CHAR(9) not null,
-    Salary integer not null,
+	(Worker_ID INT not null,
+    SSN char(9) not null,
+    Salary INT not null,
     primary key (Worker_ID),
     unique (SSN),
-    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade,
-    check (SSN regexp ('^[:digit:]+$'))
+    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
+    -- check (SSN like '^[:digit:][:digit:][:digit:][:digit:][:digit:][:digit:][:digit:][:digit:][:digit:]$')
     );
     
-delimiter //
-create trigger ProjectProDB.EMPLOYEES_BI before insert on ProjectProDB.EMPLOYEES 
-	for each row 
-		begin 
+-- delimiter //
+-- create trigger ProjectProDB.EMPLOYEES_BI before insert on ProjectProDB.EMPLOYEES 
+	-- for each row 
+		-- begin 
 			-- declare mylength integer;
 			-- set mylength = length(new.SSN);
-            if new.SSN = 'A' then 
-				signal sqlstate '01000'
-                set message_text = 'this was an error';
-			end if;
-        end;//
-delimiter ;
+            -- if new.SSN = 'A' then 
+				-- signal sqlstate '01000'
+				-- set message_text = 'this was an error';
+			-- end if;
+        -- end;//
+-- delimiter ;
 
     
 create table ProjectProDB.TEAMS
@@ -83,7 +83,8 @@ create table ProjectProDB.STRENGTHS
 	(Strength_ID integer not null,
     Strength_name varchar(20) not null,
     Strength_description varchar(200),
-    primary key (Strength_ID)
+    primary key (Strength_ID),
+    unique (Strength_name)
     );    
     
 create table ProjectProDB.ASSOCIATED_STRENGTHS
@@ -122,7 +123,7 @@ create table ProjectProDB.PROJECT_TASKS
 create table ProjectProDB.WORKER_HAS_STRENGTHS
 	(Worker_ID integer not null,
     Strength_ID integer not null,
-    Strength_Rank integer not null,
+    Strength_rank integer not null,
     primary key (Worker_ID, Strength_ID),
     foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade,
     foreign key (Strength_ID) references ProjectProDB.STRENGTHS (Strength_ID) on delete cascade on update cascade
@@ -185,9 +186,37 @@ create table ProjectProDB.DONATIONS
 
     
 insert into ProjectProDB.WORKERS 
-values (1, 1, '2000-01-01', 'Trent', 'Johnston', 'Employee');
+values (1, 1, '2000-01-01', 'Trent', 'Johnston', 'Employee'),
+		(2, 1, '2000-01-01', 'Arthur', 'L', 'Employee');
 insert into ProjectProDB.EMPLOYEES
-values (1, 'A', 2);
-select * from ProjectProDB.EMPLOYEES;
-
+values (1, '123456789', 2),
+		(2, '234567890', 3);
+insert into ProjectProDB.ACCOUNT_ACCESS
+values ('ttdjohns', 'ttdjohns', 2, 1),
+		('arthurL', 'polish', 1, 2);
+insert into ProjectProDB.WORKER_EMAILS 
+values (1, 'ttdjohnston@gmail.com'),
+		(2, '3woeiiaoaindfa@gmail.com'),
+        (1, 'dsoifasodign@gmail.com');
+insert into ProjectProDB.WORKER_PHONE_NUMBERS
+values (1, '12342363456'),
+		(2, '32524950925'),
+        (1, '29835712394');
+        
+insert into ProjectProDB.STRENGTHS
+values (1, 'First Str', ''),
+		(2, ' 2 Str', ''),
+        (3, '3 Str', ''),
+        (4, '4 Str', ''),
+		(5, '5 Str', ''),
+		(6, ' LLOK2 Str', ''),
+        (7, 'DSFAPO3 Str', ''),
+        (8, 'AFUSDH4 Str', '');
+        
+insert into ProjectProDB.WORKER_HAS_STRENGTHS
+values (1, 5, 1),
+		(1, 1, 2),
+        (1, 2, 3),
+        (1, 3, 4),
+        (1, 7, 5);
     
