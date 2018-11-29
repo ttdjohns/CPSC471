@@ -27,6 +27,50 @@ app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function () {
     debug('Express server listening on port ' + server.address().port);
 });
+
+/*
+ * request
+ *      { "Username": "ttdjohns",
+	"Password": "ttdjohns"
+}
+ *
+ * response
+ * {
+    "status": true,
+    "id": 1,
+    "Access_level": 2
+}
+*/
+app.post('/login', async function (req, res) {
+    // connect to db
+    var con = connectToDB();
+    // q db
+    var p1 = new Promise(function (resolve, reject) {
+        var str = 'select * from ProjectProDB.ACCOUNT_ACCESS where Username = \'' + req.body.Username + '\' and Password = \'' + req.body.Password + '\';';
+        con.query(str, (err, rows) => {
+            if (err) {
+                console.log(err);
+                resolve({ status: false, id: -1, Access_level: -1 });
+            }
+            else if (Object.keys(rows).length > 0) {
+                resolve({ status: true, id: rows[0].Worker_ID, Access_level: rows[0].Access_level });
+            }
+            else {
+                resolve({ status: false, id: -1, Access_level: -1 });
+            };
+        });
+    });
+
+    async function f(p1) {
+        let p1V = await p1;
+
+        con.end();
+        console.log('connection closed');
+        res.send(p1V);
+    }
+    f(p1);
+}); 
+
 /*
  * request
  *      { "id": 1 }
@@ -452,47 +496,6 @@ function connectToDB() {
     return connection;
 }
 
-/*
- * request
- *      { "id": 1 }
- *
- * response
- * {
-    "status": true,
-    "Access_Level": 2
-}
-*/
-app.post('/getPermissionLevel', async function (req, res) {
-    // check for permissions
-    if (await verifyPermissions((req.body.id), WORKER_PERMISSION_LEVEL)) {
-        console.log('permission granted');
-        // connect to db
-        var con = connectToDB();
-
-        var p1 = new Promise(function (resolve, reject) {
-            var str = 'select Access_level from ProjectProDB.ACCOUNT_ACCESS where Worker_ID = ' + req.body.id;
-            con.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    resolve(-1);
-                }
-                else {
-                    resolve(rows[0].Access_level);
-                };
-            });
-        });
-
-        async function f(p1) {
-            let p1V = await p1;
-            con.end();
-            console.log('connection closed');
-            res.send({ "status": true, Access_Level: p1V });
-        }
-        f(p1);
-    }
-    else { res.send({ "status": false }); };
-}); 
-
 function verifyPermissions(id, reqLevel) {
     var con = connectToDB();
     var promise = new Promise(function (resolve, reject) {
@@ -515,49 +518,6 @@ function verifyPermissions(id, reqLevel) {
     console.log('connection closed in verify permissions');
     return retValue;
 }
-
-/*
- * request
- *      { "Username": "ttdjohns",
-	"Password": "ttdjohns"
-}
- *
- * response
- * {
-    "status": true,
-    "id": 1,
-    "Access_level": 2
-}
-*/
-app.post('/login', async function (req, res) {
-    // connect to db
-    var con = connectToDB();
-    // q db
-    var p1 = new Promise(function (resolve, reject) {
-        var str = 'select * from ProjectProDB.ACCOUNT_ACCESS where Username = \'' + req.body.Username + '\' and Password = \'' + req.body.Password + '\';';
-        con.query(str, (err, rows) => {
-            if (err) {
-                console.log(err);
-                resolve({ status: false, id: -1, Access_level: -1 });
-            }
-            else if (Object.keys(rows).length > 0) {
-                resolve({status: true, id: rows[0].Worker_ID, Access_level: rows[0].Access_level});
-            }
-            else {
-                resolve({ status: false, id: -1, Access_level: -1 });
-            };
-        });
-    });
-
-    async function f(p1) {
-        let p1V = await p1;
-
-        con.end();
-        console.log('connection closed');
-        res.send(p1V);
-    }
-    f(p1);
-}); 
 
 /*
  * request      (note that the Strength is the Strength_ID and the order indicates the rank. Strength[0] is your best)
@@ -1591,7 +1551,7 @@ app.post('/listProjectTasks', async function (req, res) {
 }
  * 
 */
-app.post('/deleteProjectTask', async function (req, res) {
+app.post('/removeProjectTask', async function (req, res) {
     // check for permissions
     var permission = await verifyPermissions((req.body.id), TEAM_MANAGER_PERMISSION_LEVEL);
     if (permission && (req.body.Project_ID != undefined) && (req.body.Worker_ID != undefined) && (req.body.Task_ID != undefined)) {
@@ -2033,8 +1993,7 @@ app.post('/addStrength', async function (req, res) {
 /*
  * request  
  * { "id": 1,
-"Strength_name": "Teaching",
-"Strength_description": "Instructing others"
+"Strength_name": 1
 }
  * response 
  * {
@@ -2051,7 +2010,7 @@ app.post('/removeStrength', async function (req, res) {
         if (!hasAssociated) {
             var connection = connectToDB();
             var p1 = await (new Promise(function (resolve, reject) {
-                var str = `delete from ProjectProDB where Strength_ID = ` + req.body.Strength_ID + `;`;
+                var str = `delete from ProjectProDB.STRENGTHS where Strength_ID = ` + req.body.Strength_ID + `;`;
                 connection.query(str, (err, rows) => {
                     if (err) {
                         console.log(err);
@@ -2070,6 +2029,65 @@ app.post('/removeStrength', async function (req, res) {
             res.send({
                 status: false,
                 error_message: "Error: Cannot remove strength until there are no tasks associated to that strength"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request  
+ * { "id": 1,
+"Strength_name": 1
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/editStrength', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        var exists = await checkExists(req.body.Strength_ID, "STRENGTHS", "Strength_ID");
+        if (exists) {
+            if (await checkExists(req.body.Strength_name, "STRENGTHS", "Strength_name")) {
+                var connection = connectToDB();
+                var p1 = await (new Promise(function (resolve, reject) {
+                    var str = `update ProjectProDB.STRENGTHS set Strength_name = ` + req.body.Strength_name + `, 
+                            Strength_description = ` + req.body.Strength_description + `
+                            where Strength_ID = ` + req.body.Strength_ID + `;`;
+                    connection.query(str, (err, rows) => {
+                        if (err) {
+                            console.log(err);
+                            resolve(false);
+                        }
+                        else {
+                            resolve(true);
+                        }
+                    });
+                }));
+                res.send({ status: p1 });
+                connection.end();
+                console.log('connection closed in editStrength');
+            } else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Strength name already exists"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Strength does not exist"
             });
         }
     }
@@ -2751,6 +2769,310 @@ app.post('/editTask', async function (req, res) {
             res.send({
                 status: false,
                 error_message: "Error: Task name is not unique"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ //* request
+ * { "id": 1,
+"Team_ID": 1,
+"Supervisor_ID": 1,
+"Team_name": "New capital punishment"
+}
+ *     
+ *
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/editAccountAccess', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        var usernameExists = checkExists(req.body.Username, "ACCOUNT_ACCESS", "Username");
+        if (!usernameExists) {
+            console.log('permission granted');
+            var connection = connectToDB();
+            // q db
+            var str = `update ProjectProDB.ACCOUNT_ACCESS set Password = \'` + req.body.Password +
+                `\', Access_level = ` + req.body.Access_level + `, Username = \'` + req.body.Username +
+                `\' where Worker_ID = ` + req.body.Worker_ID + `;`;
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ status: false });
+                }
+                else {
+                    var ret = {
+                        status: true
+                    }
+                    res.send(ret);
+                };
+            });
+            connection.end();
+            console.log('connection closed in editTeam');
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Username taken"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request
+ *    { "id": 1,
+"Worker_ID": 2
+}
+ *
+ * response
+ * {
+    "status": true,
+    "Username": "arthurI",
+    "Access_level": 2
+}
+*/
+app.post('/getUsernameAndPermissionLevel', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        // connect to db
+        var con = connectToDB();
+
+        var p1 = new Promise(function (resolve, reject) {
+            var str = 'select Username, Access_level from ProjectProDB.ACCOUNT_ACCESS where Worker_ID = ' + req.body.Worker_ID;
+            con.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err);
+                    resolve(-1);
+                }
+                else {
+                    resolve(rows[0]);
+                };
+            });
+        });
+
+        async function f(p1) {
+            let p1V = await p1;
+            con.end();
+            console.log('connection closed');
+            res.send({ "status": true, Username: p1V.Username, Access_level: p1V.Access_level });
+        }
+        f(p1);
+    }
+    else { res.send({ "status": false }); };
+}); 
+
+/*
+ * request              (note salary and ssn are only neccessary for employees)
+ *      { "id": 1,
+"First_name": "Ron",
+"Last_name": "Swanson",
+"Type": "Employee",
+"SSN": "123927402",
+"Salary": 500000,
+"Emails": ["sodnfansof23@sodfn.oidf","asodfin@.adon"],
+"Phone_numbers": [2349023907273],
+"Username": "TheSwanson",
+"Password": "password",
+"Access_level": 3
+}
+ * 
+ * response 
+ * {
+    "status": true
+}
+ */
+app.post('/addWorker', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        if ((req.body.Type).toUpperCase() == "EMPLOYEE") {
+            var validSSN = true;
+            if (req.body.SSN.length != 9) {
+                validSSN = false
+            }
+            for (var j = 0; j < req.body.SSN.length; j++) {
+                if (!((!isNaN(parseInt((req.body.SSN).charAt(j), 10))))) {
+                    validSSN = false;
+                }
+            }
+            if (!validSSN) {
+                return res.send({
+                    status: false,
+                    error_message: "Error: Invalid SSN given"
+                })
+            }
+        }
+        var emailDuplicates = false;
+        var allValidEmails = true;
+        // ensure there are no duplicates in the new entries
+        for (var i = 0; i < req.body.Emails.length; i++) {
+            var hasDot = (req.body.Emails[i]).includes(".");
+            var hasAt = (req.body.Emails[i]).includes("@");
+            if (!(hasDot && hasAt)) {
+                allValidEmails = false;
+            }
+            for (var j = i + 1; j < req.body.Emails.length; j++) {
+                if ((req.body.Emails[i]) == (req.body.Emails[j])) {
+                    emailDuplicates = true;
+                };
+            }
+        }
+        if (!emailDuplicates) {
+            if (allValidEmails) {
+                var phoneDuplicates = false;
+                var allValidPhoneNumbers = true;
+                // ensure there are no duplicates in the new entries
+                for (var i = 0; i < req.body.Phone_numbers.length; i++) {
+                    for (var j = 0; j < (req.body.Phone_numbers[i]).length; j++) {
+                        if (!((!isNaN(parseInt((req.body.Phone_numbers[i]).charAt(j), 10)))
+                            || ((req.body.Phone_numbers[i]).charAt(j) == '-')
+                            || ((req.body.Phone_numbers[i]).charAt(j) == '(')
+                            || ((req.body.Phone_numbers[i]).charAt(j) == ')'))) {
+                            allValidPhoneNumbers = false;
+                        }
+                    }
+                    for (var j = i + 1; j < req.body.Phone_numbers.length; j++) {
+                        if ((req.body.Phone_numbers[i]) == (req.body.Phone_numbers[j])) {
+                            phoneDuplicates = true;
+                        };
+                    }
+                }
+                if (!phoneDuplicates) {
+                    if (allValidPhoneNumbers) {
+                        var nextPrimary = (await getNextPrimary("WORKERS", "Worker_ID")) + 1 ;
+                        var connection = connectToDB();
+                        var p1 = await (new Promise(function (resolve, reject) {
+                            var today = new Date();
+                            var str = `insert into ProjectProDB.WORKERS 
+                        values (` + nextPrimary + `, \'`
+                                + today.getFullYear() + `-`
+                                + (today.getMonth() + 1) + `-`
+                                + today.getDate() + `\',
+                                \'` + req.body.First_name + `\', \'`
+                                + req.body.Last_name + `\', \'` + req.body.Type + `\');`;
+                            connection.query(str, (err, rows) => {
+                                if (err) {
+                                    console.log(err);
+                                    resolve(false);
+                                }
+                                else {
+                                    resolve(true);
+                                }
+                            });
+                        }));
+
+                        var p2 = await (new Promise(function (resolve, reject) {
+                            for (var i = 0; i < req.body.Emails.length; i++) {
+                                var str = `insert ProjectProDB.WORKER_EMAILS 
+                                values (` + nextPrimary + ', \'' + req.body.Emails[i] + '\');';
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    };
+                                });
+                            };
+                            resolve(true);
+                        }));
+
+                        var p3 = await (new Promise(function (resolve, reject) {
+                            for (var i = 0; i < req.body.Phone_numbers.length; i++) {
+                                var str = `insert ProjectProDB.WORKER_PHONE_NUMBERS
+                                values (` + nextPrimary + ', \'' + req.body.Phone_numbers[i] + '\');';
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    };
+                                });
+                            };
+                            resolve(true);
+                        }));
+
+                        var p4 = await (new Promise(function (resolve, reject) {
+                            var str = ""
+                            if ((req.body.Type).toUpperCase() == "VOLUNTEER") {
+                                str = `insert ProjectProDB.VOLUNTEERS
+                                             values (` + nextPrimary + ', 20);';
+                            }
+                            else {
+                                str = `insert ProjectProDB.EMPLOYEES
+                                             values (` + nextPrimary + ', ' + req.body.SSN + ', ' + req.body.Salary + ');';
+                            }
+                            connection.query(str, (err, rows) => {
+                                if (err) {
+                                    console.log(err);
+                                    resolve(false);
+                                };
+                            });
+                            resolve(true);
+                        }));
+                        var p5 = await (new Promise(function (resolve, reject) {
+                            var today = new Date();
+                            var str = `insert into ProjectProDB.ACCOUNT_ACCESS
+                                        values (\'` + req.body.Username + `\', \'`
+                                                    + req.body.Password + `\',
+                                                  ` + req.body.Access_level + `, `
+                                                    + nextPrimary + `);`;
+                            connection.query(str, (err, rows) => {
+                                if (err) {
+                                    console.log(err);
+                                    resolve(false);
+                                }
+                                else {
+                                    resolve(true);
+                                }
+                            });
+                        }));
+                        res.send({status: (p1 && p2 && p3 && p4 && p5)})
+                        connection.end();
+                        console.log('connection closed');
+                    }
+                    else {
+                        res.send({
+                            status: false,
+                            error_message: "Error: Invalid phone number(s) given"
+                        });
+                    }
+                }
+                else {
+                    res.send({
+                        status: false,
+                        error_message: "Error: Duplicate Phone numbers given"
+                    });
+                }
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Invalid Email(s) given"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Duplicate Emails given"
             });
         }
     }
