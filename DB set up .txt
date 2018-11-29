@@ -3,7 +3,6 @@ drop database ProjectProDB;
 create database ProjectProDB;
 create table ProjectProDB.WORKERS
 	(Worker_ID integer NOT NULL,
-    Hours_assigned integer NOT NULL,
     Start_date date not null,
     First_name VARCHAR(20) NOT NULL,
     Last_name VARCHAR(40) NOT NULL,
@@ -116,10 +115,12 @@ create table ProjectProDB.PROJECT_TASKS
 	(Worker_ID integer not null,
     Task_ID integer not null,
     Project_ID integer not null,
-    primary key (Worker_ID, Task_ID, Project_ID),
+    Team_ID integer not null,
+    primary key (Worker_ID, Task_ID, Project_ID, Team_ID),
     foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade,
     foreign key (Task_ID) references ProjectProDB.TASKS (Task_ID) on delete cascade on update cascade,
-    foreign key (Project_ID) references ProjectProDB.PROJECTS (Project_ID) on delete cascade on update cascade
+    foreign key (Project_ID) references ProjectProDB.PROJECTS (Project_ID) on delete cascade on update cascade,
+    foreign key (Team_ID) references ProjectProDB.TEAMS (Team_ID) on delete cascade on update cascade
     );
     
 create table ProjectProDB.WORKER_HAS_STRENGTHS
@@ -189,16 +190,19 @@ create table ProjectProDB.DONATIONS
 
     
 insert into ProjectProDB.WORKERS 
-values (1, 1, '2000-01-01', 'Trent', 'Johnston', 'Employee'),
-		(2, 1, '2000-01-01', 'Arthur', 'Iwaniszyn', 'Employee'),
-        (3, 1, '2000-01-01', 'Anton', 'Lysov', 'Employee');
+values (1, '2000-01-01', 'Trent', 'Johnston', 'Employee'),
+		(2, '2000-01-01', 'Arthur', 'Iwaniszyn', 'Employee'),
+        (3, '2000-01-01', 'Anton', 'Lysov', 'Volunteer'),
+        (4, '2000-01-01', 'Jeff', 'Davids', 'Employee');
 insert into ProjectProDB.EMPLOYEES
 values (1, '123456789', 2),
-		(2, '234567890', 3);
+		(2, '234567890', 3),
+        (4, '123254352', 439857210);
 insert into ProjectProDB.ACCOUNT_ACCESS
 values ('ttdjohns', 'ttdjohns', 3, 1),
 		('arthurI', 'polish', 2, 2),
-        ('Anton', 'Lysov', 1, 3);
+        ('Anton', 'Lysov', 1, 3),
+        ('Jeff', 'Jeff', 2, 4);
 insert into ProjectProDB.WORKER_EMAILS 
 values (1, 'ttdjohnston@gmail.com'),
 		(2, '3woeiiaoaindfa@gmail.com'),
@@ -223,7 +227,8 @@ values (1, 5, 1),
 		(1, 1, 2),
         (1, 2, 3),
         (1, 3, 4),
-        (1, 7, 5);
+        (1, 7, 5),
+        (2, 1, 1);
         
 insert into ProjectProDB.TASKS
 values (1, 'tie the noose', 'your best sailor impression'),
@@ -236,7 +241,9 @@ insert into ProjectProDB.DESIRES
 values (1, 1),
 		(2, 1),
         (3, 1),
-        (5, 2);
+        (5, 2),
+        (1, 2),
+        (1, 3);
         
 insert into ProjectProDB.PROJECTS
 values (1, 'aosiidfn', 'aisodfnaoisdfnoa'),
@@ -244,22 +251,28 @@ values (1, 'aosiidfn', 'aisodfnaoisdfnoa'),
         (3, 'hanging', 'your best wind chime impression'),
 		(4, 'electric chair', 'what happens next will shock you');
         
-insert into ProjectProDB.PROJECT_TASKS
-values (1, 1, 2),
-		(2, 1, 2),
-        (1, 2, 2),
-        (2, 2, 2),
-        (1, 3, 2),
-        (2, 1, 3),
-		(3, 4, 4);
-        
 insert into projectprodb.TEAMS
-values (1, 2, 'capital punishment');
+values (1, 2, 'capital punishment'),
+		(2, 4, 'Assisted Suicide');
 
 insert into projectprodb.IS_PART_OF
 values (2, 1),
-		(3, 1);
+		(3, 1),
+        (4, 2);
         
 insert into projectprodb.WORKS_ON
-values (3, 1),
-		(4, 1);
+values (2, 1),
+		(3, 1),
+		(4, 1),
+        (1, 1),
+        (4, 2);
+        
+insert into ProjectProDB.ASSOCIATED_STRENGTHS
+values (1, 1);
+
+insert into ProjectProDB.PROJECT_TASKS
+values (2, 1, 2, 1),
+        (2, 2, 2, 1),
+		(2, 1, 3, 1),
+		(3, 4, 2, 1);
+        
