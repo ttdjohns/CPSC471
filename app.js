@@ -197,7 +197,7 @@ app.post('/listWorkerDetails', async function (req, res) {
     "status": true
 }
 */
-app.post('/editWorkerDetails', async function (req, res) {
+app.post('/editWorker', async function (req, res) {
     // check for permissions
     if (await verifyPermissions((req.body.id), WORKER_PERMISSION_LEVEL)) {
         console.log('permission granted');
@@ -360,7 +360,7 @@ app.post('/editWorkerDetails', async function (req, res) {
  * request
  *      { "id": 1 }
  *
- * response     (note these are the strength names)
+ * response    
  * {
  *  "status": true,
     "Strengths": [
@@ -381,7 +381,7 @@ app.post('/listWorkerStrengths', async function (req, res) {
         // q db
 
         var p1 = new Promise(function (resolve, reject) {
-            var str = `select s.Strength_name, whs.Strength_rank 
+            var str = `select s.*, whs.Strength_rank 
                             from ((ProjectProDB.WORKER_HAS_STRENGTHS as whs) join (ProjectProDB.STRENGTHS as s) on whs.Strength_ID = s.Strength_ID)
                             where whs.Worker_ID = ` + req.body.id +
                             ' order by whs.Strength_rank asc;';
@@ -402,7 +402,12 @@ app.post('/listWorkerStrengths', async function (req, res) {
             let p1V = await p1;
             var list = [];
             for (var i = 0; i < Object.keys(p1V).length; i++) {
-                list.push(p1V[i].Strength_name);
+                list.push({
+                    Strength_ID: p1V[i].Strength_ID,
+                    Strength_name: p1V[i].Strength_name,
+                    Strength_description: p1V[i].Strength_description,
+                    Strength_rank: p1V[i].Strength_rank
+                });
             }
             var ret = { "status": true, Strengths: list };
 
@@ -441,7 +446,7 @@ app.post('/listWorkerStrengths', async function (req, res) {
     ]
 }
 */
-app.post('/listAllStrengths', async function (req, res) {
+app.post('/listStrengths', async function (req, res) {
     // check for permissions
     if (await verifyPermissions((req.body.id), WORKER_PERMISSION_LEVEL)) {
         console.log('permission granted');
@@ -523,7 +528,7 @@ function verifyPermissions(id, reqLevel) {
  * request      (note that the Strength is the Strength_ID and the order indicates the rank. Strength[0] is your best)
  *              (always must have 5 strengths)
  *      { "id": 1,
-        "Strengths": [2, 3, 4, 5, 1]     
+        "Strength_IDs": [2, 3, 4, 5, 1]     
         }
  *
  * response
@@ -533,13 +538,13 @@ function verifyPermissions(id, reqLevel) {
 */
 app.post('/editWorkerStrengths', async function (req, res) {
     // check for permissions
-    if ((req.body.Strengths.length == 5) && (await verifyPermissions((req.body.id), WORKER_PERMISSION_LEVEL))) {
+    if ((req.body.Strength_IDs.length == 5) && (await verifyPermissions((req.body.id), WORKER_PERMISSION_LEVEL))) {
         console.log('permission granted');
         var duplicates = false;
         // ensure there are no duplicates in the new entries
-        for (var i = 0; i < req.body.Strengths.length; i++) {
-            for (var j = i + 1; j < req.body.Strengths.length; j++) {
-                if ((req.body.Strengths[i]) == (req.body.Strengths[j])) {
+        for (var i = 0; i < req.body.Strength_IDs.length; i++) {
+            for (var j = i + 1; j < req.body.Strength_IDs.length; j++) {
+                if ((req.body.Strength_IDs[i]) == (req.body.Strength_IDs[j])) {
                     duplicates = true;
                 };
             }
@@ -566,9 +571,9 @@ app.post('/editWorkerStrengths', async function (req, res) {
             });
 
             var p2 = new Promise(function (resolve, reject) {
-                for (var i = 0; i < req.body.Strengths.length; i++) {
+                for (var i = 0; i < req.body.Strength_IDs.length; i++) {
                     var str = `insert ProjectProDB.WORKER_HAS_STRENGTHS 
-                                values (` + req.body.id + ', ' + req.body.Strengths[i] + ', ' + i + ');';
+                                values (` + req.body.id + ', ' + req.body.Strength_IDs[i] + ', ' + i + ');';
                     connection.query(str, (err, rows) => {
                         if (err) {
                             console.log(err);
@@ -666,9 +671,9 @@ app.post('/listDesiredTasks', async function (req, res) {
 }); 
 
 /*
- * request          (Tasks is a list of desired Task_ID's)
+ * request          
  *      { "id": 1,
-        "Tasks": [1, 2]
+        "Task_IDs": [1, 2]
         }
  *
  * response
@@ -682,9 +687,9 @@ app.post('/editWorkerDesires', async function (req, res) {
         console.log('permission granted');
         var duplicates = false;
         // ensure there are no duplicates in the new entries
-        for (var i = 0; i < req.body.Tasks.length; i++) {
-            for (var j = i + 1; j < req.body.Tasks.length; j++) {
-                if ((req.body.Tasks[i]) == (req.body.Tasks[j])) {
+        for (var i = 0; i < req.body.Task_IDs.length; i++) {
+            for (var j = i + 1; j < req.body.Task_IDs.length; j++) {
+                if ((req.body.Task_IDs[i]) == (req.body.Task_IDs[j])) {
                     duplicates = true;
                 };
             }
@@ -694,7 +699,7 @@ app.post('/editWorkerDesires', async function (req, res) {
             var connection = connectToDB();
             // q db
 
-            var p1 = new Promise(function (resolve, reject) {
+            var p1 = await (new Promise(function (resolve, reject) {
                 var str = `delete from ProjectProDB.DESIRES
                     where Worker_ID = ` + req.body.id + ';';
                 //console.log(str);
@@ -708,12 +713,12 @@ app.post('/editWorkerDesires', async function (req, res) {
                         resolve(true);
                     }
                 });
-            });
+            }));
 
-            var p2 = new Promise(function (resolve, reject) {
-                for (var i = 0; i < req.body.Tasks.length; i++) {
+            var p2 = await (new Promise(function (resolve, reject) {
+                for (var i = 0; i < req.body.Task_IDs.length; i++) {
                     var str = `insert ProjectProDB.DESIRES 
-                                values (` + req.body.id + ', \'' + req.body.Tasks[i] + '\');';
+                                values (` + req.body.Task_IDs[i] + ', \'' + req.body.id + '\');';
                     connection.query(str, (err, rows) => {
                         if (err) {
                             console.log(err);
@@ -722,16 +727,10 @@ app.post('/editWorkerDesires', async function (req, res) {
                     });
                 };
                 resolve(true);
-            });
-            async function f(p1, p2) {
-
-                let p1V = await p1;
-                let p2V = await p2;
-                connection.end();
-                console.log('connection closed');
-                res.send({ status: (p1V && p1V) });
-            }
-            f(p1, p2);
+            }));
+            connection.end();
+            console.log('connection closed');
+            res.send({ status: (p1 && p2) });
         }
         else { res.send({ status: false }) };
     }
@@ -840,7 +839,7 @@ app.post('/listAssignedTasks', async function (req, res) {
 }
  * 
 */
-app.post('/listAllWorkers', async function (req, res) {
+app.post('/listWorkers', async function (req, res) {
     // check for permissions
     if (await verifyPermissions((req.body.id), TEAM_MANAGER_PERMISSION_LEVEL)) {
         console.log('permission granted');
@@ -878,7 +877,7 @@ app.post('/listAllWorkers', async function (req, res) {
 /*
  * request      (Team_ID should only be there if you are an organization manager)
  * { "id": 1,
-"Team_ID": 1
+"Team_ID": 1    <<opt>>
 }
  *     
  *
@@ -965,7 +964,7 @@ app.post('/listTeamWorkers', async function (req, res) {
  * request      (Team_ID should only be there if you are an organization manager)
  * { "id": 1,
 "Worker_ID": 3,
-"Team_ID": 1
+"Team_ID": 1        <<opt>>
 }
  *     
  *
@@ -1025,7 +1024,7 @@ app.post('/addWorkerToTeam', async function (req, res) {
  * request      (Team_ID should only be there if you are an organization manager)
  * { "id": 1,
 "Worker_ID": 3,
-"Team_ID": 1
+"Team_ID": 1        <<opt>>
 }
  *     
  *
@@ -1045,13 +1044,14 @@ app.post('/removeWorkerFromTeam', async function (req, res) {
         var connection = connectToDB();
         // q db
         var str = "";
-        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
+        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (req.body.id != req.body.Worker_ID)) {
             str = `delete from ProjectProDB.IS_PART_OF
                     where Worker_ID = ` + req.body.Worker_ID + ` and Team_ID = (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + ');';
         }
         else if ((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) {
             str = `delete from ProjectProDB.IS_PART_OF
-                    where Worker_ID = ` + req.body.Worker_ID + ` and Team_ID = ` + req.body.Team_ID + ';';
+                    where Worker_ID = ` + req.body.Worker_ID + ` and Team_ID = ` + req.body.Team_ID + `
+                    and Worker_ID not in (select Supervisor_ID from ProjectProDB.TEAMS where Team_ID = ` + req.body.Team_ID + `);`;
         }
         if (str != "") {
             connection.query(str, (err, rows) => {
@@ -1059,9 +1059,15 @@ app.post('/removeWorkerFromTeam', async function (req, res) {
                     console.log(err)
                     res.send({ status: false });
                 }
-                else {
+                else if (rows.affected_rows > 0 ){
                     res.send({ status: true });
-                };
+                }
+                else {
+                    res.send({
+                        status: false,
+                        error_message: "Worker_ID undefined or attemped to remove Team Supervisor from Team"
+                    })
+                }
             });
         }
         else {
@@ -1082,11 +1088,11 @@ app.post('/removeWorkerFromTeam', async function (req, res) {
 });
 
 /*
- * request      (Team_ID is an optional parameter if you are an organization manager
+ * request      (Team_ID is an required parameter if you are an organization manager
  *                  With Team_ID; see all projects that the team is working on
  *                  without Team_ID; see all projects)
  * { "id": 1,
-"Team_ID": 1
+"Team_ID": 1   <<opt>>
 }
  *     
  *
@@ -1168,7 +1174,8 @@ app.post('/listProjects', async function (req, res) {
 
 /*
  * request      (Team_ID should only be there if you are an organization manager)
- * { "id": 2,
+ * { "id": 1,
+"Team_ID": 1,   <<opt>>
 "Project_ID": 3,
 "Project_name": "Lethal Injection",
 "Project_description": "Just like a flu shot"
@@ -1226,8 +1233,11 @@ function getNextPrimary(tableName, keyName) {
                 console.log(err);
                 resolve(-1);
             }
+            else if (rows[0].maximum != null) {
+                resolve((rows[0].maximum) + 1);
+            }
             else {
-                resolve(rows[0].maximum);
+                resolve(1);
             }
         });
     });
@@ -1239,7 +1249,7 @@ function getNextPrimary(tableName, keyName) {
 /*
  * request      (Team_ID should only be there if you are an organization manager)
  * { "id": 1,
-"Team_ID": 1,
+"Team_ID": 1,   <<opt>>
 "Project_name": "Injection",
 "Project_description": "Just like a flu shot"
 }
@@ -1259,7 +1269,6 @@ app.post('/addProject', async function (req, res) {
             (permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
         console.log('permission granted');
         var nextPrime = await getNextPrimary("PROJECTS", "Project_ID");
-        nextPrime++;
         console.log(nextPrime);
         // connect to db
         var connection = connectToDB();
@@ -1311,7 +1320,7 @@ app.post('/addProject', async function (req, res) {
 /*
  * request      (Team_ID should only be there if you are an organization manager)
  * { "id": 1,
-"Team_ID": 1,
+"Team_ID": 1,   <<opt>>
 "Project_ID": 2
 }
  *     
@@ -1407,7 +1416,7 @@ app.post('/removeTeamFromProject', async function (req, res) {
 /*
  * request      (Team_ID is optional if you are an organization manager) (Project_ID is necessary)
  * { "id": 1,
-"Team_ID": 1,
+"Team_ID": 1,   <<opt>>
 "Project_ID": 2
 }
  *     
@@ -1536,12 +1545,12 @@ app.post('/listProjectTasks', async function (req, res) {
 });
 
 /*
- * request                  
- * { "id": 2,
+ * request                  (Team_ID is required if you are an organization manager)
+ * { "id": 1,
 "Project_ID": 2,
 "Worker_ID": 2,
 "Task_ID": 2,
-"Team_ID": 1
+"Team_ID": 1   <<opt>>
 }
  *     
  *
@@ -1601,9 +1610,9 @@ app.post('/removeProjectTask', async function (req, res) {
 });
 
 /*
- * request     
+ * request      (Team_ID is required if you are an organization manager)
  * { "id": 1,
-"Team_ID": 1,
+"Team_ID": 1,   <<opt>>
 "Task_ID": 1
 }
  *     
@@ -1850,7 +1859,7 @@ app.post('/listWorkersForTask', async function (req, res) {
 /*
  * request      (Team_ID should only be there if you are an organization manager)
  * { "id": 2,
-"Task_ID": 1,
+"Task_ID": 1,   <<opt>>
 "Worker_ID": 2,
 "Project_ID": 2,
 "Team_ID": 1
@@ -1954,7 +1963,6 @@ app.post('/addStrength', async function (req, res) {
     if (permission) {
         console.log('permission granted');
         var nextPrime = await getNextPrimary("STRENGTHS", "Strength_ID");
-        nextPrime++;
         var nameUnique = await checkUnique(req.body.Strength_name, "STRENGTHS", "Strength_name");
         if (nameUnique) {
             // connect to db
@@ -1993,7 +2001,7 @@ app.post('/addStrength', async function (req, res) {
 /*
  * request  
  * { "id": 1,
-"Strength_name": 1
+"Strength_ID": 1
 }
  * response 
  * {
@@ -2043,7 +2051,9 @@ app.post('/removeStrength', async function (req, res) {
 /*
  * request  
  * { "id": 1,
-"Strength_name": 1
+"Strength_ID": 1,
+"Strength_name": "noaienf",
+"Strength_description": "osdifnaos"
 }
  * response 
  * {
@@ -2058,11 +2068,11 @@ app.post('/editStrength', async function (req, res) {
         console.log('permission granted');
         var exists = await checkExists(req.body.Strength_ID, "STRENGTHS", "Strength_ID");
         if (exists) {
-            if (await checkExists(req.body.Strength_name, "STRENGTHS", "Strength_name")) {
+            if (!(await checkExists(req.body.Strength_name, "STRENGTHS", "Strength_name"))) {
                 var connection = connectToDB();
                 var p1 = await (new Promise(function (resolve, reject) {
-                    var str = `update ProjectProDB.STRENGTHS set Strength_name = ` + req.body.Strength_name + `, 
-                            Strength_description = ` + req.body.Strength_description + `
+                    var str = `update ProjectProDB.STRENGTHS set Strength_name = \'` + req.body.Strength_name + `\', 
+                            Strength_description = \'` + req.body.Strength_description + `\'
                             where Strength_ID = ` + req.body.Strength_ID + `;`;
                     connection.query(str, (err, rows) => {
                         if (err) {
@@ -2174,124 +2184,7 @@ function checkExistsWhere(attToCheck, tableName, keyName, whereConstraint) {
     });
     con.end();
     return p1;
-}
-
-/*
- * request      
- * { "id": 1,
-"Cause_name": "Justice",
-"Cause_description": "My perverted sense of"
-}
- *     
- *
- * response 
- * {
-    "status": true
-}
- * 
-*/
-app.post('/addCause', async function (req, res) {
-    // check for permissions
-    var permission = verifyPermissions(req.body.id, ADMIN_PERMISSION_LEVEL);
-    if (await permission) {
-        console.log('permission granted');
-        var nextPrime = await getNextPrimary("CAUSES", "Cause_ID");
-        nextPrime++;
-        var isUnique = await checkUnique(req.body.Cause_name, "CAUSES", "Cause_name");
-        if (isUnique) {
-            // connect to db
-            var connection = connectToDB();
-            var p1 = await (new Promise(function (resolve, reject) {
-                var str = `insert into ProjectProDB.CAUSES
-                    values (` + nextPrime + `, \'` + req.body.Cause_name + `\', \'` + req.body.Cause_description + `\');`;
-                connection.query(str, (err, rows) => {
-                    if (err) {
-                        console.log(err);
-                        resolve(false);
-                    }
-                    else {
-                        resolve(true);
-                    }
-                });
-            }));
-            res.send({ status: p1 });
-            connection.end();
-            console.log('connection closed in addCause');
-        }
-        else {
-            res.send({
-                status: false,
-                error_message: "Either invalid strength provided or Task name already exists"
-            })
-        }
-    }
-    else {
-        res.send({
-            status: false,
-            error_message: "Error: Invalid Permissions"
-        });
-    }
-});
-
-/*
- * request
- *      { "id": 1 }
- *
- * response
- {
-    "status": true,
-    "Causes": [
-        {
-            "Cause_ID": 1,
-            "Cause_name": "Justice",
-            "Cause_description": "My perverted sense of"
-        }
-    ]
-}
- *
-*/
-app.post('/listAllCauses', async function (req, res) {
-    // check for permissions
-    if (await verifyPermissions((req.body.id), TEAM_MANAGER_PERMISSION_LEVEL)) {
-        console.log('permission granted');
-        var connection = connectToDB();
-        var p1 = new Promise(function (resolve, reject) {
-            var str = `select * from (ProjectProDB.CAUSES as c);`;
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    resolve([]);
-                }
-                else {
-                    resolve(rows);
-                }
-            });
-        });
-
-        async function f(p1) {
-            let p1V = await p1;
-            var list = [];
-            for (var i = 0; i < Object.keys(p1V).length; i++) {
-                list.push({
-                    Cause_ID: p1V[i].Cause_ID,
-                    Cause_name: p1V[i].Cause_name,
-                    Cause_description: p1V[i].Cause_description
-                });
-            }
-            var ret = { "status": true, Causes: list };
-            connection.end();
-            console.log('connection closed');
-            res.send(ret);
-        }
-        f(p1);
-    }
-    else {
-        res.send({
-            "status": false,
-            "error_message": "Error: Invalid Permissions"
-        });
-    };
-}); 
+};
 
 /*
  //* request
@@ -2605,7 +2498,6 @@ app.post('/addTask', async function (req, res) {
     if (permission && (req.body.Associated_strength_ID.length > 0)) {
         console.log('permission granted');
         var nextPrime = await getNextPrimary("TASKS", "Task_ID");
-        nextPrime++;
         var strengthExists = true;
         for (let i = 0; i < req.body.Associated_strength_ID.length; i++) {
             strengthExists = strengthExists && (await checkExists(req.body.Associated_strength_ID[i], "STRENGTHS", "Strength_ID"));
@@ -2886,7 +2778,7 @@ app.post('/getUsernameAndPermissionLevel', async function (req, res) {
  *      { "id": 1,
 "First_name": "Ron",
 "Last_name": "Swanson",
-"Type": "Employee",
+"Worker_type": "Employee",
 "SSN": "123927402",
 "Salary": 500000,
 "Emails": ["sodnfansof23@sodfn.oidf","asodfin@.adon"],
@@ -2905,7 +2797,7 @@ app.post('/addWorker', async function (req, res) {
     // check for permissions
     if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
         console.log('permission granted');
-        if ((req.body.Type).toUpperCase() == "EMPLOYEE") {
+        if ((req.body.Worker_type).toUpperCase() == "EMPLOYEE") {
             var validSSN = true;
             if (req.body.SSN.length != 9) {
                 validSSN = false
@@ -2959,7 +2851,7 @@ app.post('/addWorker', async function (req, res) {
                 }
                 if (!phoneDuplicates) {
                     if (allValidPhoneNumbers) {
-                        var nextPrimary = (await getNextPrimary("WORKERS", "Worker_ID")) + 1 ;
+                        var nextPrimary = (await getNextPrimary("WORKERS", "Worker_ID"));
                         var connection = connectToDB();
                         var p1 = await (new Promise(function (resolve, reject) {
                             var today = new Date();
@@ -2969,7 +2861,7 @@ app.post('/addWorker', async function (req, res) {
                                 + (today.getMonth() + 1) + `-`
                                 + today.getDate() + `\',
                                 \'` + req.body.First_name + `\', \'`
-                                + req.body.Last_name + `\', \'` + req.body.Type + `\');`;
+                                + req.body.Last_name + `\', \'` + req.body.Worker_type + `\');`;
                             connection.query(str, (err, rows) => {
                                 if (err) {
                                     console.log(err);
@@ -3011,7 +2903,7 @@ app.post('/addWorker', async function (req, res) {
 
                         var p4 = await (new Promise(function (resolve, reject) {
                             var str = ""
-                            if ((req.body.Type).toUpperCase() == "VOLUNTEER") {
+                            if ((req.body.Worker_type).toUpperCase() == "VOLUNTEER") {
                                 str = `insert ProjectProDB.VOLUNTEERS
                                              values (` + nextPrimary + ', 20);';
                             }
@@ -3081,5 +2973,1230 @@ app.post('/addWorker', async function (req, res) {
             status: false,
             error_message: "Error: Invalid Permissions"
         });
+    }
+});
+
+/*
+ * request  
+ * { "id": 1,
+"Worker_ID": 3
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/removeWorker', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        var isSuper = await checkExists(req.body.Worker_ID, "TEAMS", "Supervisor_ID");
+        if (!isSuper) {
+            if (req.body.id != req.body.Worker_ID) {
+                if (req.body.Worker_ID != 1) {
+                    var connection = connectToDB();
+                    var p1 = await (new Promise(function (resolve, reject) {
+                        var str = `delete from ProjectProDB.WORKERS where Worker_ID = ` + req.body.Worker_ID + `;`;
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err);
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            }
+                        });
+                    }));
+                    res.send({ status: p1 });
+                    connection.end();
+                    console.log('connection closed in removeWorker');
+                }
+                else {
+                    res.send({
+                        status: false,
+                        error_message: "Error: Cannot remove remove Primary Admin"
+                    });
+                }
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Cannot remove remove yourself"
+                });
+            }
+        }
+        else 
+        {
+            res.send({
+                status: false,
+                error_message: "Error: Cannot remove a supervisor of a team"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+
+/*
+ * request      
+ * { "id": 1,
+"Cause_name": "Justice",
+"Cause_description": "My perverted sense of"
+}
+ *     
+ *
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/addCause', async function (req, res) {
+    // check for permissions
+    var permission = verifyPermissions(req.body.id, ADMIN_PERMISSION_LEVEL);
+    if (await permission) {
+        console.log('permission granted');
+        var nextPrime = await getNextPrimary("CAUSES", "Cause_ID");
+        var isUnique = await checkUnique(req.body.Cause_name, "CAUSES", "Cause_name");
+        if (isUnique) {
+            // connect to db
+            var connection = connectToDB();
+            var p1 = await (new Promise(function (resolve, reject) {
+                var str = `insert into ProjectProDB.CAUSES
+                    values (` + nextPrime + `, \'` + req.body.Cause_name + `\', \'` + req.body.Cause_description + `\');`;
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
+                });
+            }));
+            res.send({ status: p1 });
+            connection.end();
+            console.log('connection closed in addCause');
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Either invalid strength provided or Task name already exists"
+            })
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * 
+ * request
+ *      { "id": 1 }
+ *
+ * response
+ {
+    "status": true,
+    "Tasks": [
+        {
+            "Task_ID": 5,
+            "Task_name": "wieur",
+            "Task_description": "",
+            "Associated_strengths": []
+        },
+        {
+            "Task_ID": 6,
+            "Task_name": "Waterboarding",
+            "Task_description": "Showing others how to be a fish",
+            "Associated_strengths": [
+                {
+                    "Strength_ID": 2,
+                    "Strength_name": " 2 Str",
+                    "Strength_description": ""
+                },
+                {
+                    "Strength_ID": 3,
+                    "Strength_name": "3 Str",
+                    "Strength_description": ""
+                }
+            ]
+        }
+    ]
+}
+ *
+*/
+app.post('/listCauses', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        // connect to db
+        var connection = connectToDB();
+        // q db
+        var p1 = await (new Promise(function (resolve, reject) {
+            var str = `select * from (ProjectProDB.CAUSES as c);`;
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err);
+                    resolve([]);
+                }
+                else {
+                    resolve(rows);
+                }
+            });
+        }));
+        var list = [];
+        for (var i = 0; i < Object.keys(p1).length; i++) {
+            var p2 = await (new Promise(function (resolve, reject) {
+                var str = `select * from (((ProjectProDB.DEDICATED_TO as dt) join (ProjectProDB.CAUSES as c) on dt.Cause_ID = c.Cause_ID)
+                            join (ProjectProDB.PROJECTS as p) on p.Project_ID = dt.Project_ID)
+                            where dt.Cause_ID = ` + p1[i].Cause_ID + `;`;
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                        resolve([]);
+                    }
+                    else {
+                        resolve(rows);
+                    }
+                });
+            }));
+            var list2 = [];
+            for (var j = 0; j < Object.keys(p2).length; j++) {
+                list2.push({
+                    Project_ID: p2[j].Project_ID,
+                    Project_name: p2[j].Project_name,
+                    Project_description: p2[j].Project_description
+                });
+            }
+
+            list.push({
+                Cause_ID: p1[i].Cause_ID,
+                Cause_name: p1[i].Cause_name,
+                Cause_description: p1[i].Cause_description,
+                Dedicated_projects: list2
+            });
+        }
+        var ret = { "status": true, Causes: list };
+
+        connection.end();
+        console.log('connection closed on listCauses');
+        res.send(ret);
+
+    }
+    else {
+        res.send({
+            "status": false,
+            "error_message": "Error: Invalid Permissions"
+        });
+    };
+}); 
+
+/*
+ * request  
+ * { "id": 1,
+"Cause_ID": 1,
+"Cause_name": "qsadnfoan",
+"Cause_description": "adnfoasndf",
+"Projects": [1, 2]
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/editCause', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        var exists = await checkExists(req.body.Cause_ID, "CAUSES", "Cause_ID");
+        if (exists) {
+            if (!(await checkExists(req.body.Cause_name, "CAUSES", "Cause_name"))) {
+                var connection = connectToDB();
+                var p1 = await (new Promise(function (resolve, reject) {
+                    var str = `update ProjectProDB.CAUSES set Cause_name = \'` + req.body.Cause_name + `\', 
+                            Cause_description = \'` + req.body.Cause_description + `\'
+                            where Cause_ID = ` + req.body.Cause_ID + `;`;
+                    connection.query(str, (err, rows) => {
+                        if (err) {
+                            console.log(err);
+                            resolve(false);
+                        }
+                        else {
+                            resolve(true);
+                        }
+                    });
+                }));
+                var p2 = await (new Promise(function (resolve, reject) {
+                    var str = `delete from ProjectProDB.DEDICATED_TO 
+                    where Cause_ID = ` + req.body.Cause_ID + ';';
+                    connection.query(str, (err, rows) => {
+                        if (err) {
+                            console.log(err);
+                            resolve(false);
+                        }
+                        else {
+                            resolve(true);
+                        }
+                    });
+                }));
+                var p3 = await (new Promise(function (resolve, reject) {
+                    for (var i = 0; i < req.body.Projects.length; i++) {
+                        var str = `insert ProjectProDB.DEDICATED_TO 
+                                values (` + req.body.Projects[i] + ', ' + req.body.Cause_ID + ');';
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err);
+                                resolve(false);
+                            };
+                        });
+                    };
+                    resolve(true);
+                }));
+                res.send({ status: p1 && p2 && p3 });
+                connection.end();
+                console.log('connection closed in editCauses');
+            } else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Cause name already exists"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Cause does not exist"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request  
+ * { "id": 1,
+"Cause_ID": 1
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/removeCause', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        var exists = await checkExists(req.body.Cause_ID, "CAUSES", "Cause_ID");
+        if (exists) {
+            var connection = connectToDB();
+            var p1 = await (new Promise(function (resolve, reject) {
+                var str = `delete from ProjectProDB.CAUSES where Cause_ID = ` + req.body.Cause_ID + `;`;
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
+                });
+            }));
+            res.send({ status: p1 });
+            connection.end();
+            console.log('connection closed in removeWorker');
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Cause does not exist"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request         
+ *      { "id": 1,
+"First_name": "Ron",
+"Last_name": "Swanson",
+"Mailing_address": "234 place street",
+"Emails": ["sodnfansof23@sodfn.oidf","asodfin@.adon"],
+"Phone_numbers": [2349023907273]
+}
+ * 
+ * response 
+ * {
+    "status": true
+}
+ */
+app.post('/addDonor', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        var emailDuplicates = false;
+        var allValidEmails = true;
+        // ensure there are no duplicates in the new entries
+        for (var i = 0; i < req.body.Emails.length; i++) {
+            var hasDot = (req.body.Emails[i]).includes(".");
+            var hasAt = (req.body.Emails[i]).includes("@");
+            if (!(hasDot && hasAt)) {
+                allValidEmails = false;
+            }
+            for (var j = i + 1; j < req.body.Emails.length; j++) {
+                if ((req.body.Emails[i]) == (req.body.Emails[j])) {
+                    emailDuplicates = true;
+                };
+            }
+        }
+        if (!emailDuplicates) {
+            if (allValidEmails) {
+                var phoneDuplicates = false;
+                var allValidPhoneNumbers = true;
+                // ensure there are no duplicates in the new entries
+                for (var i = 0; i < req.body.Phone_numbers.length; i++) {
+                    for (var j = 0; j < (req.body.Phone_numbers[i]).length; j++) {
+                        if (!((!isNaN(parseInt((req.body.Phone_numbers[i]).charAt(j), 10)))
+                            || ((req.body.Phone_numbers[i]).charAt(j) == '-')
+                            || ((req.body.Phone_numbers[i]).charAt(j) == '(')
+                            || ((req.body.Phone_numbers[i]).charAt(j) == ')'))) {
+                            allValidPhoneNumbers = false;
+                        }
+                    }
+                    for (var j = i + 1; j < req.body.Phone_numbers.length; j++) {
+                        if ((req.body.Phone_numbers[i]) == (req.body.Phone_numbers[j])) {
+                            phoneDuplicates = true;
+                        };
+                    }
+                }
+                if (!phoneDuplicates) {
+                    if (allValidPhoneNumbers) {
+                        var nextPrimary = (await getNextPrimary("DONORS", "Donor_ID"));
+                        var connection = connectToDB();
+                        var p1 = await (new Promise(function (resolve, reject) {
+                            var str = `insert into ProjectProDB.DONORS 
+                        values (` + nextPrimary + `, \'`
+                                + req.body.First_name + `\', \'`
+                                + req.body.Last_name + `\', \'`
+                                + req.body.Mailing_address + `\');`;
+                            connection.query(str, (err, rows) => {
+                                if (err) {
+                                    console.log(err);
+                                    resolve(false);
+                                }
+                                else {
+                                    resolve(true);
+                                }
+                            });
+                        }));
+
+                        var p2 = await (new Promise(function (resolve, reject) {
+                            for (var i = 0; i < req.body.Emails.length; i++) {
+                                var str = `insert ProjectProDB.DONOR_EMAILS 
+                                values (` + nextPrimary + ', \'' + req.body.Emails[i] + '\');';
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    };
+                                });
+                            };
+                            resolve(true);
+                        }));
+
+                        var p3 = await (new Promise(function (resolve, reject) {
+                            for (var i = 0; i < req.body.Phone_numbers.length; i++) {
+                                var str = `insert ProjectProDB.DONOR_PHONE_NUMBERS
+                                values (` + nextPrimary + ', \'' + req.body.Phone_numbers[i] + '\');';
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    };
+                                });
+                            };
+                            resolve(true);
+                        }));
+
+                        res.send({ status: (p1 && p2 && p3) })
+                        connection.end();
+                        console.log('connection closed');
+                    }
+                    else {
+                        res.send({
+                            status: false,
+                            error_message: "Error: Invalid phone number(s) given"
+                        });
+                    }
+                }
+                else {
+                    res.send({
+                        status: false,
+                        error_message: "Error: Duplicate Phone numbers given"
+                    });
+                }
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Invalid Email(s) given"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Duplicate Emails given"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request { "id": 1 }
+ *     
+ *
+ * response 
+ * {
+    "status": true,
+    "Donors": [
+        {
+            "Donor_ID": 1,
+            "First_name": "Uncle",
+            "Last_name": "Joe",
+            "Mailing_address": "gulag144 Vostok ave Russia",
+            "Emails": [
+                "gulag144@siberia.ru"
+            ],
+            "Phone_numbers": [
+                "7-346-2737373"
+            ],
+            "Donations": [
+                {
+                    "Donation_ID": 1,
+                    "Amount": 500000000,
+                    "Cause_ID": 2
+                }
+            ]
+        }
+    ]
+}
+ * 
+*/
+app.post('/listDonors', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        // connect to db
+        var connection = connectToDB();
+        // q db
+
+        var p1 = await (new Promise(function (resolve, reject) {
+            var str = 'select * from ProjectProDB.DONORS';
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.send([]);
+                }
+                else {
+                    resolve(rows);
+                };
+            });
+        }));
+
+        var list = [];
+        for (var i = 0; i < Object.keys(p1).length; i++) {
+            var p2 = await (new Promise(function (resolve, reject) {
+                var str = 'select * from ProjectProDB.DONOR_EMAILS where Donor_ID = ' + p1[i].Donor_ID + ';';
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        res.send([]);
+                    }
+                    else {
+                        resolve(rows);
+                    };
+                });
+            }));
+            var list2 = [];
+            for (var j = 0; j < Object.keys(p2).length; j++) {
+                list2.push(p2[j].Email);
+            }
+
+            var p3 = await (new Promise(function (resolve, reject) {
+                var str = 'select * from ProjectProDB.DONOR_PHONE_NUMBERS where Donor_ID = ' + p1[i].Donor_ID + ';';
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        res.send([]);
+                    }
+                    else {
+                        resolve(rows);
+                    };
+                });
+            }));
+            var list3 = [];
+            for (var j = 0; j < Object.keys(p3).length; j++) {
+                list3.push(p3[j].Phone_number);
+            }
+
+            var p4 = await (new Promise(function (resolve, reject) {
+                var str = 'select * from ProjectProDB.DONATIONS where Donor_ID = ' + p1[i].Donor_ID + ';';
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        res.send([]);
+                    }
+                    else {
+                        resolve(rows);
+                    };
+                });
+            }));
+            var list4 = [];
+            for (var j = 0; j < Object.keys(p4).length; j++) {
+                list4.push({
+                    Donation_ID: p4[j].Donation_ID,
+                    Amount: p4[j].Amount,
+                    Cause_ID: p4[j].Cause_ID
+                });
+            }
+
+            list.push({
+                Donor_ID: p1[i].Donor_ID,
+                First_name: p1[i].First_name,
+                Last_name: p1[i].Last_name,
+                Mailing_address: p1[i].Mailing_address,
+                Emails: list2,
+                Phone_numbers: list3,
+                Donations: list4
+            });
+        }
+        res.send({ status: true, Donors: list });
+        connection.end();
+        console.log('connection closed in listDonors');
+    }
+    else {
+        res.send({ status: false });
+    }
+});
+
+/*
+ * request
+ *     { "id": 1,
+"Donor_ID": 1,
+"First_name": "Joseph",
+"Last_name": "Stalin",
+"Phone_numbers": ["3214433435", "231432897"],
+"Emails": ["qoewiniwo@fdoianfo.saiodn", "sdasifnanw@ioan.sdin"]
+}
+ *
+ * response
+ * {
+    "status": true
+}
+*/
+app.post('/editDonor', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        var emailDuplicates = false;
+        var allValidEmails = true;
+        // ensure there are no duplicates in the new entries
+        for (var i = 0; i < req.body.Emails.length; i++) {
+            var hasDot = (req.body.Emails[i]).includes(".");
+            var hasAt = (req.body.Emails[i]).includes("@");
+            if (!(hasDot && hasAt)) {
+                allValidEmails = false;
+            }
+            for (var j = i + 1; j < req.body.Emails.length; j++) {
+                if ((req.body.Emails[i]) == (req.body.Emails[j])) {
+                    emailDuplicates = true;
+                };
+            }
+        }
+        if (!emailDuplicates) {
+            if (allValidEmails) {
+                var phoneDuplicates = false;
+                var allValidPhoneNumbers = true;
+                // ensure there are no duplicates in the new entries
+                for (var i = 0; i < req.body.Phone_numbers.length; i++) {
+                    for (var j = 0; j < (req.body.Phone_numbers[i]).length; j++) {
+                        if (!((!isNaN(parseInt((req.body.Phone_numbers[i]).charAt(j), 10)))
+                            || ((req.body.Phone_numbers[i]).charAt(j) == '-')
+                            || ((req.body.Phone_numbers[i]).charAt(j) == '(')
+                            || ((req.body.Phone_numbers[i]).charAt(j) == ')'))) {
+                            allValidPhoneNumbers = false;
+                        }
+                    }
+                    for (var j = i + 1; j < req.body.Phone_numbers.length; j++) {
+                        if ((req.body.Phone_numbers[i]) == (req.body.Phone_numbers[j])) {
+                            phoneDuplicates = true;
+                        };
+                    }
+                }
+                if (!phoneDuplicates) {
+                    if (allValidPhoneNumbers) {
+                        var connection = connectToDB();
+                        var p1 = new Promise(function (resolve, reject) {
+                            var str = `update ProjectProDB.DONORS 
+                    set First_name = \'` + req.body.First_name + `\', Last_name = \'` + req.body.Last_name + `\'
+                    where Donor_ID = ` + req.body.Donor_ID + ';';
+                            connection.query(str, (err, rows) => {
+                                if (err) {
+                                    console.log(err);
+                                    resolve(false);
+                                }
+                                else {
+                                    resolve(true);
+                                }
+                            });
+                        });
+                        var p2 = await (new Promise(function (resolve, reject) {
+                            var str = `delete from ProjectProDB.DONOR_EMAILS 
+                    where Donor_ID = ` + req.body.Donor_ID + ';';
+                            connection.query(str, (err, rows) => {
+                                if (err) {
+                                    console.log(err);
+                                    resolve(false);
+                                }
+                                else {
+                                    resolve(true);
+                                }
+                            });
+                        }));
+                        var p3 = new Promise(function (resolve, reject) {
+                            for (var i = 0; i < req.body.Emails.length; i++) {
+                                var str = `insert ProjectProDB.DONOR_EMAILS 
+                                values (` + req.body.Donor_ID + ', \'' + req.body.Emails[i] + '\');';
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    };
+                                });
+                            };
+                            resolve(true);
+                        });
+                        var p4 = await (new Promise(function (resolve, reject) {
+                            var str = `delete from ProjectProDB.DONOR_PHONE_NUMBERS 
+                    where Donor_ID = ` + req.body.Donor_ID + ';';
+                            connection.query(str, (err, rows) => {
+                                if (err) {
+                                    console.log(err);
+                                    resolve(false);
+                                }
+                                else {
+                                    resolve(true);
+                                }
+                            });
+                        }));
+
+                        var p5 = new Promise(function (resolve, reject) {
+                            for (var i = 0; i < req.body.Phone_numbers.length; i++) {
+                                var str = `insert ProjectProDB.DONOR_PHONE_NUMBERS
+                                values (` + req.body.Donor_ID + ', \'' + req.body.Phone_numbers[i] + '\');';
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    };
+                                });
+                            };
+                            resolve(true);
+                        });
+                        async function f(p1, p2, p3, p4, p5) {
+
+                            let p1V = await p1;
+                            let p2V = p2;
+                            let p3V = await p3;
+                            let p4V = p4;
+                            let p5V = await p5;
+
+                            res.send({ status: (p1V && p2V && p3V && p4V && p5V) });
+                        }
+                        f(p1, p2, p3, p4, p5);
+                        connection.end();
+                        console.log('connection closed');
+                    }
+                    else {
+                        res.send({
+                            status: false,
+                            error_message: "Error: Invalid phone number(s) given"
+                        });
+                    }
+                }
+                else {
+                    res.send({
+                        status: false,
+                        error_message: "Error: Duplicate Phone numbers given"
+                    });
+                }
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Invalid Email(s) given"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Duplicate Emails given"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request  
+ * { "id": 1,
+"Donor_ID": 1
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/removeDonor', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        var exists = await checkExists(req.body.Donor_ID, "DONORS", "Donor_ID");
+        if (exists) {
+            var connection = connectToDB();
+            var p1 = await (new Promise(function (resolve, reject) {
+                var str = `delete from ProjectProDB.DONORS where Donor_ID = ` + req.body.Donor_ID + `;`;
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
+                });
+            }));
+            res.send({ status: p1 });
+            connection.end();
+            console.log('connection closed in removeDonor');
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Donor does not exist"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+
+/*
+ * request  
+ * { "id": 1,
+"Amount": 30,
+"Donor_ID": 1,
+"Cause_ID": 1
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/addDonation', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        var donorExists = await checkExists(req.body.Donor_ID, "DONORS", "Donor_ID");
+        if (donorExists) {
+            var causeExists = await checkExists(req.body.Cause_ID, "CAUSES", "Cause_ID");
+            if (causeExists) {
+                var connection = connectToDB();
+                var nextPrime = await getNextPrimary("DONATIONS", "Donation_ID");
+                var p1 = await (new Promise(function (resolve, reject) {
+                    var str = `insert into ProjectProDB.DONATIONS
+                                values (` + nextPrime + `, ` + req.body.Cause_ID + `, ` + req.body.Donor_ID + `, ` + req.body.Amount + `);`;
+                    connection.query(str, (err, rows) => {
+                        if (err) {
+                            console.log(err);
+                            resolve(false);
+                        }
+                        else {
+                            resolve(true);
+                        }
+                    });
+                }));
+                res.send({ status: p1 });
+                connection.end();
+                console.log('connection closed in addDonation');
+            } else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Cause does not exist"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Donor does not exist"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request  
+ * { "id": 1,
+"Donation_ID": 1,
+"Amount": 20,
+"Donor_ID": 1,
+"Cause_ID": 1
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/editDonation', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        if (await checkExists(req.body.Donation_ID, "DONATIONS", "Donation_ID")) {
+            if (await checkExists(req.body.Cause_ID, "CAUSES", "Cause_ID")) {
+                if ((await checkExists(req.body.Donor_ID, "DONORS", "Donor_ID"))) {
+                    var connection = connectToDB();
+                    var p1 = await (new Promise(function (resolve, reject) {
+                        var str = `update ProjectProDB.Donations set Donor_ID = ` + req.body.Donor_ID + `, 
+                            Cause_ID = ` + req.body.Cause_ID + `, 
+                            Amount = ` + req.body.Amount + `
+                            where Donation_ID = ` + req.body.Donation_ID + `;`;
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err);
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            }
+                        });
+                    }));
+                    res.send({ status: p1 });
+                    connection.end();
+                    console.log('connection closed in editDonation');
+                } else {
+                    res.send({
+                        status: false,
+                        error_message: "Error: Donor does not exists"
+                    });
+                }
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Cause does not exist"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Donations does not exist"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * 
+ * request
+ *      { "id": 1 }
+ *
+ * response
+ {
+    "status": true,
+    "Donations": [
+        {
+            "Donation_ID": 1,
+            "Amount": 20,
+            "Cause_ID": 1,
+            "Cause_name": "Helping the poor",
+            "Cause_description": "Helping the poor",
+            "Donor_ID": 1,
+            "First_name": "Uncle",
+            "Last_name": "Joe",
+            "Mailing_address": "gulag144 Vostok ave Russia"
+        }
+    ]
+}
+ *
+*/
+app.post('/listDonations', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        // connect to db
+        var connection = connectToDB();
+        // q db
+        var p1 = await (new Promise(function (resolve, reject) {
+            var str = `select c.*, d.*, dts.Amount, dts.Donation_ID
+                            from (((ProjectProDB.DONATIONS as dts) join (ProjectProDB.DONORS as d) on dts.Donor_ID = d.Donor_ID)
+                            join (ProjectProDB.CAUSES as C) on dts.Cause_ID = c.Cause_ID);`;
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err);
+                    resolve([]);
+                }
+                else {
+                    resolve(rows);
+                }
+            });
+        }));
+        var list = []
+        for (var i = 0; i < Object.keys(p1).length; i++) {
+            list.push({
+                Donation_ID: p1[i].Donation_ID,
+                Amount: p1[i].Amount,
+                Cause_ID: p1[i].Cause_ID,
+                Cause_name: p1[i].Cause_name,
+                Cause_description: p1[i].Cause_name,
+                Donor_ID: p1[i].Donor_ID,
+                First_name: p1[i].First_name,
+                Last_name: p1[i].Last_name,
+                Mailing_address: p1[i].Mailing_address
+            })
+        }
+        var ret = { "status": true, Donations: list };
+        connection.end();
+        console.log('connection closed on listCauses');
+        res.send(ret);
+    }
+    else {
+        res.send({
+            "status": false,
+            "error_message": "Error: Invalid Permissions"
+        });
+    };
+}); 
+
+
+/*
+ * request  
+ * { "id": 1,
+"Worker_ID": 1,
+"Salary": 20,
+"SSN": 987654321,
+"Worker_type": "Employee"
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/editWorkerAsAdmin', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        if (req.body.Worker_type != undefined) {
+            if (await checkExists(req.body.Worker_ID, "WORKERS", "Worker_ID")) {
+                if (!(await checkExists(req.body.SSN, "WORKERS", "SSN"))) {
+                    if ((req.body.Worker_type).toUpperCase() == "EMPLOYEE") {
+                        var validSSN = true;
+                        if (req.body.SSN.length != 9) {
+                            validSSN = false
+                        }
+                        for (var j = 0; j < req.body.SSN.length; j++) {
+                            if (!((!isNaN(parseInt((req.body.SSN).charAt(j), 10))))) {
+                                validSSN = false;
+                            }
+                        }
+                        if (!validSSN) {
+                            return res.send({
+                                status: false,
+                                error_message: "Error: Invalid SSN given"
+                            })
+                        }
+                    }
+                    var connection = connectToDB();
+                    var p1 = await (new Promise(function (resolve, reject) {
+                        var str = "";
+                        if ((req.body.Worker_type).toUpperCase() == "EMPLOYEE") {
+                            str = `update ProjectProDB.WORKERS set SSN = ` + req.body.SSN + `, 
+                            Salary = ` + req.body.Salary + `, 
+                            Worker_type = \'` + req.body.Worker_type.toUpperCase() + `\'
+                            where Worker_ID = ` + req.body.Worker_ID + `;`;
+                        }
+                        else {
+                            str = `update ProjectProDB.WORKERS set SSN = null, 
+                            Salary = 0, 
+                            Worker_type = \'` + req.body.Worker_type.toUpperCase() + `\'
+                            where Worker_ID = ` + req.body.Worker_ID + `;`;
+                        }
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err);
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            }
+                        });
+                    }));
+                    res.send({ status: p1 });
+                    connection.end();
+                    console.log('connection closed in editDonation');
+                }
+                else {
+                    res.send({
+                        status: false,
+                        error_message: "Error: SSN already exists"
+                    });
+                }
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Worker does not exist"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: false,
+                error_message: "Error: Worker Type was not given"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ * request { "id": 1}
+ *     
+ *
+ * response 
+ * {
+    "status": true,
+    "Workers": [
+        {
+            "Worker_ID": 1,
+            "Start_date": "2000-01-01T07:00:00.000Z",
+            "First_name": "Trent",
+            "Last_name": "Johnston",
+            "Worker_type": "Employee",
+        },
+        {
+            "Worker_ID": 2,
+            "Start_date": "2000-01-01T07:00:00.000Z",
+            "First_name": "Arthur",
+            "Last_name": "L",
+            "Worker_type": "Employee"
+        }
+    ]
+}
+ * 
+*/
+app.post('/listWorkersAsAdmin', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        // connect to db
+        var connection = connectToDB();
+        // q db
+        var str = 'select * from ProjectProDB.WORKERS';
+        connection.query(str, (err, rows) => {
+            if (err) {
+                console.log(err)
+                res.send({ status: false });
+            }
+            else {
+                var list = [];
+                for (var i = 0; i < Object.keys(rows).length; i++) {
+                    list.push({
+                        Worker_ID: rows[i].Worker_ID,
+                        Start_date: rows[i].Start_date,
+                        First_name: rows[i].First_name,
+                        Last_name: rows[i].Last_name,
+                        Worker_type: rows[i].Worker_type,
+                        SSN: rows[i].SSN,
+                        Salary: rows[i].Salary
+                    });
+                }
+                res.send({ status: true, Workers: list });
+            };
+        });
+        connection.end();
+        console.log('connection closed in allWorkersAsAdmin');
+    }
+    else {
+        res.send({ status: false });
     }
 });
