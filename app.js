@@ -2851,94 +2851,93 @@ app.post('/addWorker', async function (req, res) {
                 }
                 if (!phoneDuplicates) {
                     if (allValidPhoneNumbers) {
-                        var nextPrimary = (await getNextPrimary("WORKERS", "Worker_ID"));
-                        var connection = connectToDB();
-                        var p1 = await (new Promise(function (resolve, reject) {
-                            var today = new Date();
-                            var str = `insert into ProjectProDB.WORKERS 
-                        values (` + nextPrimary + `, \'`
-                                + today.getFullYear() + `-`
-                                + (today.getMonth() + 1) + `-`
-                                + today.getDate() + `\',
-                                \'` + req.body.First_name + `\', \'`
-                                + req.body.Last_name + `\', \'` + req.body.Worker_type + `\');`;
-                            connection.query(str, (err, rows) => {
-                                if (err) {
-                                    console.log(err);
-                                    resolve(false);
-                                }
-                                else {
-                                    resolve(true);
-                                }
-                            });
-                        }));
-
-                        var p2 = await (new Promise(function (resolve, reject) {
-                            for (var i = 0; i < req.body.Emails.length; i++) {
-                                var str = `insert ProjectProDB.WORKER_EMAILS 
-                                values (` + nextPrimary + ', \'' + req.body.Emails[i] + '\');';
-                                connection.query(str, (err, rows) => {
-                                    if (err) {
-                                        console.log(err);
-                                        resolve(false);
-                                    };
-                                });
-                            };
-                            resolve(true);
-                        }));
-
-                        var p3 = await (new Promise(function (resolve, reject) {
-                            for (var i = 0; i < req.body.Phone_numbers.length; i++) {
-                                var str = `insert ProjectProDB.WORKER_PHONE_NUMBERS
-                                values (` + nextPrimary + ', \'' + req.body.Phone_numbers[i] + '\');';
-                                connection.query(str, (err, rows) => {
-                                    if (err) {
-                                        console.log(err);
-                                        resolve(false);
-                                    };
-                                });
-                            };
-                            resolve(true);
-                        }));
-
-                        var p4 = await (new Promise(function (resolve, reject) {
-                            var str = ""
-                            if ((req.body.Worker_type).toUpperCase() == "VOLUNTEER") {
-                                str = `insert ProjectProDB.VOLUNTEERS
-                                             values (` + nextPrimary + ', 20);';
-                            }
-                            else {
-                                str = `insert ProjectProDB.EMPLOYEES
-                                             values (` + nextPrimary + ', ' + req.body.SSN + ', ' + req.body.Salary + ');';
-                            }
-                            connection.query(str, (err, rows) => {
-                                if (err) {
-                                    console.log(err);
-                                    resolve(false);
+                        if (!(await checkExists(req.body.Username, "ACCOUNT_ACCESS", "Username"))) {
+                            var nextPrimary = (await getNextPrimary("WORKERS", "Worker_ID"));
+                            var connection = connectToDB();
+                            var p1 = await (new Promise(function (resolve, reject) {
+                                var today = new Date(); 
+                                var ssn = "";
+                                if (req.body.SSN != undefined) {
+                                    ssn = req.body.SSN;
                                 };
-                            });
-                            resolve(true);
-                        }));
-                        var p5 = await (new Promise(function (resolve, reject) {
-                            var today = new Date();
-                            var str = `insert into ProjectProDB.ACCOUNT_ACCESS
+                                var salary = 0;
+                                if (req.body.Salary != undefined) {
+                                    salary = req.body.Salary;
+                                };
+                                var str = `insert into ProjectProDB.WORKERS 
+                        values (` + nextPrimary + `, \'`
+                                    + today.getFullYear() + `-`
+                                    + (today.getMonth() + 1) + `-`
+                                    + today.getDate() + `\',
+                                \'` + req.body.First_name + `\', \'`
+                                    + req.body.Last_name + `\', \'` + req.body.Worker_type
+                                    + `\', \'` + ssn + `\', ` + salary + `);`;
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    }
+                                    else {
+                                        resolve(true);
+                                    }
+                                });
+                            }));
+
+                            var p2 = await (new Promise(function (resolve, reject) {
+                                for (var i = 0; i < req.body.Emails.length; i++) {
+                                    var str = `insert ProjectProDB.WORKER_EMAILS 
+                                values (` + nextPrimary + ', \'' + req.body.Emails[i] + '\');';
+                                    connection.query(str, (err, rows) => {
+                                        if (err) {
+                                            console.log(err);
+                                            resolve(false);
+                                        };
+                                    });
+                                };
+                                resolve(true);
+                            }));
+
+                            var p3 = await (new Promise(function (resolve, reject) {
+                                for (var i = 0; i < req.body.Phone_numbers.length; i++) {
+                                    var str = `insert ProjectProDB.WORKER_PHONE_NUMBERS
+                                values (` + nextPrimary + ', \'' + req.body.Phone_numbers[i] + '\');';
+                                    connection.query(str, (err, rows) => {
+                                        if (err) {
+                                            console.log(err);
+                                            resolve(false);
+                                        };
+                                    });
+                                };
+                                resolve(true);
+                            }));
+
+                            var p5 = await (new Promise(function (resolve, reject) {
+                                var today = new Date();
+                                var str = `insert into ProjectProDB.ACCOUNT_ACCESS
                                         values (\'` + req.body.Username + `\', \'`
-                                                    + req.body.Password + `\',
+                                    + req.body.Password + `\',
                                                   ` + req.body.Access_level + `, `
-                                                    + nextPrimary + `);`;
-                            connection.query(str, (err, rows) => {
-                                if (err) {
-                                    console.log(err);
-                                    resolve(false);
-                                }
-                                else {
-                                    resolve(true);
-                                }
+                                    + nextPrimary + `);`;
+                                connection.query(str, (err, rows) => {
+                                    if (err) {
+                                        console.log(err);
+                                        resolve(false);
+                                    }
+                                    else {
+                                        resolve(true);
+                                    }
+                                });
+                            }));
+                            res.send({ status: (p1 && p2 && p3 && p5) })
+                            connection.end();
+                            console.log('connection closed');
+                        }
+                        else {
+                            res.send({
+                                status: false,
+                                error_message: "Error: Invalid username"
                             });
-                        }));
-                        res.send({status: (p1 && p2 && p3 && p4 && p5)})
-                        connection.end();
-                        console.log('connection closed');
+                        }
                     }
                     else {
                         res.send({
