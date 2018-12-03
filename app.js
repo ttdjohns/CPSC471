@@ -2412,7 +2412,7 @@ app.post('/removeTeam', async function (req, res) {
 */
 app.post('/listTasks', async function (req, res) {
     // check for permissions
-    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+    if (await verifyPermissions((req.body.id), WORKER_PERMISSION_LEVEL)) {
         console.log('permission granted');
         // connect to db
         var connection = connectToDB();
