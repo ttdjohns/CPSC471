@@ -70,7 +70,7 @@ create table ProjectProDB.ASSOCIATED_STRENGTHS
     
 create table ProjectProDB.PROJECTS
 	(Project_ID integer not null,
-    Project_name VARCHAR(20) not null,
+    Project_name VARCHAR(50) not null,
     Project_description varchar(200),
     primary key (Project_ID)
     );
@@ -163,75 +163,286 @@ create table ProjectProDB.DONATIONS
 
 
 insert into ProjectProDB.WORKERS 
-values (1, '1000-01-01', 'RootAdmin', 'RootAdmin', 'Employee', '000000000', 0);
+values (1, '1000-01-01', 'RootAdmin', 'RootAdmin', 'Employee', '000000000', 0),
+(2, '2000-01-01', 'Trent','Johnston','Employee','111111111', 500000000),
+(3, '2000-01-01', 'Arthur','Iwaniszyn','Employee','123456789', 50000000),
+(4, '2000-01-01', 'Anton','Lysov','Employee','238461982', 500000),
+(5, '2002-01-01', 'Row','Jogan','Volunteer','538461982', 0),
+(6, '2002-01-01', 'Chris P.','Bacon','Volunteer','538461981', 0),
+(7, '2002-01-01', 'Gertrude','Walker','Volunteer','538461982', 0),
+(8, '2002-01-01', 'Bat','Man','Employee','222222222', 10),
+(9, '2002-01-01', 'Bud','Lite','Employee','333333333', 10),
+(10, '2002-01-01', 'Shawn','Connery','Employee','444444444', 10);
 
 insert into ProjectProDB.ACCOUNT_ACCESS
-values ('admin', 'admin', 3, 1);
+values ('admin', 'admin', 3, 1),
+('ttdjohns', 'ttdjohns', 3, 2),
+('aiwanisz', 'aiwanisz', 3, 3),
+('antonL', 'ForTheMotherLand', 2, 4),
+('Row','Jogan', 1, 5),
+('Chris P.','Bacon',  1, 6),
+('Gertrude','Walker', 1, 7),
+('Bat','Man', 2, 8),
+('Bud','Lite', 1, 9),
+('Shawn','Connery', 1, 10);
 
--- insert into ProjectProDB.WORKER_EMAILS 
--- values (1, 'ttdjohnston@gmail.com'),
+insert into ProjectProDB.WORKER_EMAILS 
+values (2, 'ttdjohnston@gmail.com'),
+(2, 'trent@johnston-ab.ca'),
+(3, 'Arthur.Iwaniszyn@gmail.com'),
+(3, 'arthuri@shaw.ca'),
+(4, 'antonL@ucalgary.ru'),
+(5, 'rowJ@gmail.com'),
+(6, 'tastyTreat@gmail.com'),
+(7, 'WayToOld@gmail.com'),
+(8, 'GothamGirl@gmail.com'),
+(9, 'ColdBeer@gmail.com'),
+(10, '007@gmail.com');
 
--- insert into ProjectProDB.WORKER_PHONE_NUMBERS
--- values (1, '12342363456'),
+insert into ProjectProDB.WORKER_PHONE_NUMBERS
+values (2, '12342363456'),
+(3, '234134244'),
+(4, '123432434'),
+(5, '134324324'),
+(6, '132412343424'),
+(7, '1343432423'),
+(8, '312423412443'),
+(9, '1234234234343'),
+(10, '21342342344');
         
--- insert into ProjectProDB.STRENGTHS
--- values (1, 'First Str', ''),
+insert into ProjectProDB.STRENGTHS
+values (1, 'Achiever', 'Constant need for achievment'),
+(2, 'Activator', 'Impatient for action'),
+(3, 'Adaptability', 'Respond willingly to the demands of the moment'),
+(4, 'Analytical', 'Want to understand how patterns affect one another'),
+(5, 'Arranger', 'Enjoy managing all of the variables'),
+(6, 'Belief', 'Have strong core values that are enduring'),
+(7, 'Command', 'Take charge'),
+(8, 'Communication', 'Like to explain, describe, and speak'),
+(9, 'Competition', 'Instinctively competetive'),
+(10, 'Connectedness', 'Part of a greater whole'),
+(11, 'Consistency', 'Predictable and Reliable'),
+(12, 'Context', 'Look back to understand the present'),
+(13, 'Deliberative', 'Carful, vigilant and private'),
+(14, 'Developer', 'See potential in others'),
+(15, 'Discipline', 'Your world needs to be predictable'),
+(16, 'Empathy', 'You feel the emotions of others intuitively'),
+(17, 'Focus', 'You ask yourself where you are headed'),
+(18, 'Futuristic', 'Always looking towards the future'),
+(19, 'Harmony', 'You look for areas of agreement'),
+(20, 'Ideation', 'Fascinated by ideas'),
+(21, 'Includer', 'You want to include all people'),
+(22, 'Individualization', 'You are intrigued by the unique qualities of each person'),
+(23, 'Input', 'You are inquisitive and collect things such as knowledge'),
+(24, 'Intellection', 'You like to think'),
+(25, 'Learner', 'You love to learn'),
+(26, 'Maximizer', 'Always striving for excellence for yourself and others'),
+(27, 'Positivity', 'Always have a positive attitude'),
+(28, 'Relator', 'You form deep relationships with a small amount of people'),
+(29, 'Responsibility', 'Take psychological ownership for anything you commit to'),
+(30, 'Restorative', 'You love to solve problems'),
+(31, 'Self-Assurance', 'You have faith in your strengths'),
+(32, 'Significance', 'Desire to be recognized'),
+(33, 'Strategic', 'Sort through the clutter and find the best route'),
+(34, 'Woo', 'Win over others');
         
--- insert into ProjectProDB.WORKER_HAS_STRENGTHS
--- values (1, 5, 1),
+insert into ProjectProDB.WORKER_HAS_STRENGTHS
+values (2, 4, 1),
+(2, 3, 2),
+(2, 28, 3),
+(2, 6, 4),
+(2, 5, 5),
+(3, 34, 1),
+(3, 33, 2),
+(3, 32, 3),
+(3, 31, 4),
+(3, 7, 5),
+(4, 24, 1),
+(4, 23, 2),
+(4, 8, 3),
+(4, 26, 4),
+(4, 25, 5),
+(5, 13, 1),
+(5, 11, 2),
+(5, 16, 3),
+(5, 15, 4),
+(5, 17, 5),
+(6, 1, 1),
+(6, 23, 2),
+(6, 4, 3),
+(6, 6, 4),
+(6, 26, 5),
+(7, 14, 1),
+(7, 11, 2),
+(7, 6, 3),
+(7, 12, 4),
+(7, 33, 5),
+(8, 34, 1),
+(8, 23, 2),
+(8, 1, 3),
+(8, 2, 4),
+(8, 3, 5),
+(9, 4, 1),
+(9, 5, 2),
+(9, 6, 3),
+(9, 7, 4),
+(9, 8, 5),
+(10, 9, 1),
+(10, 10, 2),
+(10, 11, 3),
+(10, 12, 4),
+(10, 13, 5);
         
--- insert into ProjectProDB.TASKS
--- values (1, 'tie the noose', 'your best sailor impression'),
+insert into ProjectProDB.TASKS
+values (1, 'Meeting note taker', 'Pay attention to meetings'),
+(2, 'Project finance', 'All about the money'), 
+(3, 'Data Analytics', 'Stats is cool!'),
+(4, 'Function greeter', 'Dont forget to say hello'),
+(5, 'Presenter', 'Stay on topic'),
+(6, 'Donation managing', 'Please dont steal it!'),
+(7, 'Scheduler', 'Plan it out'),
+(8, 'Composer', 'Your time to shine!'),
+(9, 'Outreach contact', 'Be approachable'),
+(10, 'Dinner organizer', 'You love to eat'),
+(11, 'Librarian', 'You can read good'),
+(12, 'Programmer', 'You think in 1s and 0s'),
+(13, 'Website Management', 'Your fault when something goes wrong! Sorry!'),
+(14, 'Tax Adviser', 'Keeping the CRA off of our back'),
+(15, 'Director', 'You are the king');
         
--- insert into ProjectProDB.DESIRES
--- values (1, 1),
-        
--- insert into ProjectProDB.PROJECTS
--- values (1, 'aosiidfn', 'aisodfnaoisdfnoa'),
--- 		(2, 'dream team', 'the best around'),
---         (3, 'hanging', 'your best wind chime impression'),
--- 		(4, 'electric chair', 'what happens next will shock you');
-        
--- insert into projectprodb.TEAMS
--- values (1, 2, 'capital punishment'),
--- 		(2, 4, 'Assisted Suicide');
+insert into ProjectProDB.DESIRES
+values (1, 3),
+(12, 2),
+(7, 3),
+(13, 4),
+(8, 5),
+(6, 6),
+(5, 7),
+(4, 8),
+(3, 9),
+(2, 10),
+(1, 10),
+(14, 9),
+(11, 4),
+(8, 8),
+(13, 2),
+(15, 10);
 
--- insert into projectprodb.IS_PART_OF
--- values (2, 1),
--- 		(3, 1),
---         (4, 2);
         
--- insert into projectprodb.WORKS_ON
--- values (2, 1),
--- 		(3, 1),
--- 		(4, 1),
---         (1, 1),
---         (4, 2);
+insert into ProjectProDB.PROJECTS
+values (1, 'Soup kitchen', 'Feeding the poor'),
+(2, 'Hope shares fundraiser', 'Raising funds for the hope shares charity'),
+(3, 'Christmas Concert', 'Christmas music presentation'),
+(4, 'The walk', 'Walk the walk');
         
--- insert into ProjectProDB.ASSOCIATED_STRENGTHS
--- values (1, 1);
+insert into projectprodb.TEAMS
+values (1, 2, 'The dream team'),
+(2, 1, 'Fast but not furious'),
+(3, 3, 'Leading team'),
+(4, 8, 'Speed demons');
 
--- insert into ProjectProDB.PROJECT_TASKS
--- values (2, 1, 2, 1),
+insert into projectprodb.IS_PART_OF
+values (2, 3),
+         (3, 3),
+         (8, 3),
+         (2, 2),
+         (3, 4),
+         (4, 1),
+         (5, 2),
+         (6, 4),
+         (7, 1),
+         (8, 2),
+         (9, 4),
+         (10, 1);
+         
         
--- insert into ProjectProDB.CAUSES
--- values (1, 'Helping the poor', 'be nice for once'),
+insert into projectprodb.WORKS_ON
+values (1, 1),
+ 		(2, 2),
+ 		(3, 1),
+         (4, 3),
+         (1, 2),
+         (4, 4);
+        
+insert into ProjectProDB.ASSOCIATED_STRENGTHS
+ values (1, 1),
+ (2, 2),
+ (3, 3),
+ (4, 4),
+ (5, 5),
+ (6,6),
+ (7, 7),
+ (8, 8),
+ (9, 9),
+ (10, 10),
+ (11, 11),
+ (12, 12),
+ (13, 13),
+ (14, 14),
+ (15, 15),
+ (1, 16),
+ (12, 17),
+ (2, 18),
+ (3, 19),
+ (4, 20),
+ (5, 21),
+ (6, 22),
+ (7, 23),
+ (8, 24),
+ (12, 25);
+
+insert into ProjectProDB.PROJECT_TASKS
+values (2, 1, 4, 3),
+(3, 15, 4, 3),
+(4, 7, 4, 3),
+(5, 4, 2, 1),
+(6, 2, 4, 4),
+(7, 8, 1, 1),
+(8, 10, 2, 2),
+(9, 12, 4, 4),
+(10, 15, 3, 1),
+(8, 6, 2, 2),
+(2, 3, 4, 3),
+(5, 5, 2, 1);
+        
+insert into ProjectProDB.CAUSES
+ values (1, 'Helping the poor', 'be nice for once'),
+ (2, 'Sing for the poor', 'Because that will surely help them');
 
 
--- insert into ProjectProDB.DEDICATED_TO
--- values (1, 1),
+insert into ProjectProDB.DEDICATED_TO
+values (1, 1),
+(2, 2),
+(3, 1),
+(4, 2);
 
         
--- insert into ProjectProDB.DONORS
--- values (1, 'Uncle', 'Joe', 'gulag144 Vostok ave Russia');
+insert into ProjectProDB.DONORS
+values (1, 'Uncle', 'Joe', 'gulag144 Vostok ave Russia'),
+(2, 'Donald', 'Duck', '77 Sesame Street, Compton'),
+(3, 'Bugs', 'Bunny', '54 Brooklyn Ave'),
+(4, 'Mickey', 'Mouse', '62 Martin Luther King Street');
 
--- insert into projectprodb.DONOR_EMAILS
--- values (1, 'gulag144@siberia.ru');
+insert into projectprodb.DONOR_EMAILS
+values (1, 'gulag144@siberia.ru'),
+(2, 'dduck@gmail.com'),
+(3, 'bbunny@gmail.com'),
+(2, 'ddonald@siberia.ru'),
+(1, 'quitStallin@moscow.ru');
 
--- insert into projectprodb.DONOR_PHONE_NUMBERS
--- values (1, '7-346-2737373');
+insert into projectprodb.DONOR_PHONE_NUMBERS
+values (1, '7-346-2737373'),
+(4, '5345435'),
+(2, '543542'),
+(3, '6666666666'),
+(2, '4324342342');
 
--- insert into projectprodb.DONATIONS
--- values (1, 2, 1, 500000000);
+
+insert into projectprodb.DONATIONS
+values (1, 1, 1, 500000000),
+(2, 2, 2, 432432),
+(3, 1, 3, 1),
+(4, 2, 4, 4324),
+(5, 1, 1, 5432);
 
 
