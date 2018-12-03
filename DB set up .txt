@@ -7,6 +7,8 @@ create table ProjectProDB.WORKERS
     First_name VARCHAR(20) NOT NULL,
     Last_name VARCHAR(40) NOT NULL,
     Worker_type varchar(20) not null,
+	SSN char(9),
+    Salary INT not null,
     primary key (Worker_ID)
     );
 create table ProjectProDB.WORKER_EMAILS
@@ -21,42 +23,12 @@ create table ProjectProDB.WORKER_PHONE_NUMBERS
     primary key (Worker_ID, Phone_number),
     foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
     );
-create table ProjectProDB.VOLUNTEERS
-	(Worker_ID INT not null,
-    Max_assignable_hours INT,
-    primary key (Worker_ID),
-    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
-    );
-create table ProjectProDB.EMPLOYEES
-	(Worker_ID INT not null,
-    SSN char(9) not null,
-    Salary INT not null,
-    primary key (Worker_ID),
-    unique (SSN),
-    foreign key (Worker_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
-    -- check (SSN like '^[:digit:][:digit:][:digit:][:digit:][:digit:][:digit:][:digit:][:digit:][:digit:]$')
-    );
-    
--- delimiter //
--- create trigger ProjectProDB.EMPLOYEES_BI before insert on ProjectProDB.EMPLOYEES 
-	-- for each row 
-		-- begin 
-			-- declare mylength integer;
-			-- set mylength = length(new.SSN);
-            -- if new.SSN = 'A' then 
-				-- signal sqlstate '01000'
-				-- set message_text = 'this was an error';
-			-- end if;
-        -- end;//
--- delimiter ;
-
-    
 create table ProjectProDB.TEAMS
 	(Team_ID integer not null,
     Supervisor_ID integer not null,
     Team_name varchar(50),
     primary key (Team_ID),
-    foreign key (Supervisor_ID) references ProjectProDB.EMPLOYEES (Worker_ID) on delete cascade on update cascade
+    foreign key (Supervisor_ID) references ProjectProDB.WORKERS (Worker_ID) on delete cascade on update cascade
     );
 create table ProjectProDB.IS_PART_OF
 	(Worker_ID integer not null,
@@ -158,12 +130,13 @@ create table ProjectProDB.DEDICATED_TO
 
 create table ProjectProDB.DONORS
 	(Donor_ID integer not null,
-    Donor_name varchar(20) not null,
+    First_name varchar(20) not null,
+    Last_name varchar(30) not null,
     Mailing_address varchar(50),
     primary key (Donor_ID)
     );
 
-create table ProjectProDB.DONOR_PHONES
+create table ProjectProDB.DONOR_PHONE_NUMBERS
 	(Donor_ID integer not null,
     Phone_number varchar(20) not null,
     primary key (Donor_ID, Phone_number),
@@ -188,91 +161,77 @@ create table ProjectProDB.DONATIONS
     );
     
 
-    
+
 insert into ProjectProDB.WORKERS 
-values (1, '2000-01-01', 'Trent', 'Johnston', 'Employee'),
-		(2, '2000-01-01', 'Arthur', 'Iwaniszyn', 'Employee'),
-        (3, '2000-01-01', 'Anton', 'Lysov', 'Volunteer'),
-        (4, '2000-01-01', 'Jeff', 'Davids', 'Employee');
-insert into ProjectProDB.EMPLOYEES
-values (1, '123456789', 2),
-		(2, '234567890', 3),
-        (4, '123254352', 439857210);
+values (1, '1000-01-01', 'RootAdmin', 'RootAdmin', 'Employee', '000000000', 0);
+
 insert into ProjectProDB.ACCOUNT_ACCESS
-values ('ttdjohns', 'ttdjohns', 3, 1),
-		('arthurI', 'polish', 2, 2),
-        ('Anton', 'Lysov', 1, 3),
-        ('Jeff', 'Jeff', 2, 4);
-insert into ProjectProDB.WORKER_EMAILS 
-values (1, 'ttdjohnston@gmail.com'),
-		(2, '3woeiiaoaindfa@gmail.com'),
-        (1, 'dsoifasodign@gmail.com');
-insert into ProjectProDB.WORKER_PHONE_NUMBERS
-values (1, '12342363456'),
-		(2, '32524950925'),
-        (1, '29835712394');
-        
-insert into ProjectProDB.STRENGTHS
-values (1, 'First Str', ''),
-		(2, ' 2 Str', ''),
-        (3, '3 Str', ''),
-        (4, '4 Str', ''),
-		(5, '5 Str', ''),
-		(6, ' LLOK2 Str', ''),
-        (7, 'DSFAPO3 Str', ''),
-        (8, 'AFUSDH4 Str', '');
-        
-insert into ProjectProDB.WORKER_HAS_STRENGTHS
-values (1, 5, 1),
-		(1, 1, 2),
-        (1, 2, 3),
-        (1, 3, 4),
-        (1, 7, 5),
-        (2, 1, 1);
-        
-insert into ProjectProDB.TASKS
-values (1, 'tie the noose', 'your best sailor impression'),
-		(2, 'asoidfna', ''),
-        (3, 'fasiodfna', ''),
-        (4, 'plug in the chair', 'dont stand in water'),
-        (5, 'wieur', '');
-        
-insert into ProjectProDB.DESIRES
-values (1, 1),
-		(2, 1),
-        (3, 1),
-        (5, 2),
-        (1, 2),
-        (1, 3);
-        
-insert into ProjectProDB.PROJECTS
-values (1, 'aosiidfn', 'aisodfnaoisdfnoa'),
-		(2, 'dream team', 'the best around'),
-        (3, 'hanging', 'your best wind chime impression'),
-		(4, 'electric chair', 'what happens next will shock you');
-        
-insert into projectprodb.TEAMS
-values (1, 2, 'capital punishment'),
-		(2, 4, 'Assisted Suicide');
+values ('admin', 'admin', 3, 1);
 
-insert into projectprodb.IS_PART_OF
-values (2, 1),
-		(3, 1),
-        (4, 2);
-        
-insert into projectprodb.WORKS_ON
-values (2, 1),
-		(3, 1),
-		(4, 1),
-        (1, 1),
-        (4, 2);
-        
-insert into ProjectProDB.ASSOCIATED_STRENGTHS
-values (1, 1);
+-- insert into ProjectProDB.WORKER_EMAILS 
+-- values (1, 'ttdjohnston@gmail.com'),
 
-insert into ProjectProDB.PROJECT_TASKS
-values (2, 1, 2, 1),
-        (2, 2, 2, 1),
-		(2, 1, 3, 1),
-		(3, 4, 2, 1);
+-- insert into ProjectProDB.WORKER_PHONE_NUMBERS
+-- values (1, '12342363456'),
         
+-- insert into ProjectProDB.STRENGTHS
+-- values (1, 'First Str', ''),
+        
+-- insert into ProjectProDB.WORKER_HAS_STRENGTHS
+-- values (1, 5, 1),
+        
+-- insert into ProjectProDB.TASKS
+-- values (1, 'tie the noose', 'your best sailor impression'),
+        
+-- insert into ProjectProDB.DESIRES
+-- values (1, 1),
+        
+-- insert into ProjectProDB.PROJECTS
+-- values (1, 'aosiidfn', 'aisodfnaoisdfnoa'),
+-- 		(2, 'dream team', 'the best around'),
+--         (3, 'hanging', 'your best wind chime impression'),
+-- 		(4, 'electric chair', 'what happens next will shock you');
+        
+-- insert into projectprodb.TEAMS
+-- values (1, 2, 'capital punishment'),
+-- 		(2, 4, 'Assisted Suicide');
+
+-- insert into projectprodb.IS_PART_OF
+-- values (2, 1),
+-- 		(3, 1),
+--         (4, 2);
+        
+-- insert into projectprodb.WORKS_ON
+-- values (2, 1),
+-- 		(3, 1),
+-- 		(4, 1),
+--         (1, 1),
+--         (4, 2);
+        
+-- insert into ProjectProDB.ASSOCIATED_STRENGTHS
+-- values (1, 1);
+
+-- insert into ProjectProDB.PROJECT_TASKS
+-- values (2, 1, 2, 1),
+        
+-- insert into ProjectProDB.CAUSES
+-- values (1, 'Helping the poor', 'be nice for once'),
+
+
+-- insert into ProjectProDB.DEDICATED_TO
+-- values (1, 1),
+
+        
+-- insert into ProjectProDB.DONORS
+-- values (1, 'Uncle', 'Joe', 'gulag144 Vostok ave Russia');
+
+-- insert into projectprodb.DONOR_EMAILS
+-- values (1, 'gulag144@siberia.ru');
+
+-- insert into projectprodb.DONOR_PHONE_NUMBERS
+-- values (1, '7-346-2737373');
+
+-- insert into projectprodb.DONATIONS
+-- values (1, 2, 1, 500000000);
+
+
