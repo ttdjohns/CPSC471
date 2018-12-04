@@ -2068,7 +2068,7 @@ app.post('/editStrength', async function (req, res) {
         console.log('permission granted');
         var exists = await checkExists(req.body.Strength_ID, "STRENGTHS", "Strength_ID");
         if (exists) {
-            if (!(await checkExists(req.body.Strength_name, "STRENGTHS", "Strength_name"))) {
+            if (!(await checkExistsWhere(req.body.Strength_name, "STRENGTHS", "Strength_name", "Strength_ID <> " + req.body.Strength_ID + ";"))) {
                 var connection = connectToDB();
                 var p1 = await (new Promise(function (resolve, reject) {
                     var str = `update ProjectProDB.STRENGTHS set Strength_name = \'` + req.body.Strength_name + `\', 
