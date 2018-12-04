@@ -2270,7 +2270,7 @@ app.post('/editTeam', async function (req, res) {
     var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
     if (permission) {
         console.log('permission granted');
-        var isEmployee = await checkExists(req.body.Supervisor_ID, "EMPLOYEES", "Worker_ID")
+        var isEmployee = await checkExistsWhere(req.body.Supervisor_ID, "WORKERS", "Worker_ID", "Worker_type = \'EMPLOYEE\';");
         if (isEmployee) {
             // connect to db
             var unique = await checkUnique(req.body.Team_name, "TEAMS", "Team_name");
@@ -2675,9 +2675,9 @@ app.post('/editTask', async function (req, res) {
 /*
  //* request
  * { "id": 1,
-"Team_ID": 1,
-"Supervisor_ID": 1,
-"Team_name": "New capital punishment"
+ "Worker_ID": 2,
+"Password": "password",
+"Access_level": 3
 }
  *     
  *
@@ -2691,14 +2691,14 @@ app.post('/editAccountAccess', async function (req, res) {
     // check for permissions
     var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
     if (permission) {
-        var usernameExists = checkExists(req.body.Username, "ACCOUNT_ACCESS", "Username");
-        if (!usernameExists) {
+        var workerExists = checkExists(req.body.Worker_ID, "ACCOUNT_ACCESS", "Worker_ID");
+        if (workerExists) {
             console.log('permission granted');
             var connection = connectToDB();
             // q db
             var str = `update ProjectProDB.ACCOUNT_ACCESS set Password = \'` + req.body.Password +
-                `\', Access_level = ` + req.body.Access_level + `, Username = \'` + req.body.Username +
-                `\' where Worker_ID = ` + req.body.Worker_ID + `;`;
+                `\', Access_level = ` + req.body.Access_level +
+                ` where Worker_ID = ` + req.body.Worker_ID + `;`;
             connection.query(str, (err, rows) => {
                 if (err) {
                     console.log(err)
@@ -2712,12 +2712,12 @@ app.post('/editAccountAccess', async function (req, res) {
                 };
             });
             connection.end();
-            console.log('connection closed in editTeam');
+            console.log('connection closed in editAccountAccess');
         }
         else {
             res.send({
                 status: false,
-                error_message: "Error: Username taken"
+                error_message: "Error: Worker does not exist"
             });
         }
     }
