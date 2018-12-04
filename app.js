@@ -964,7 +964,7 @@ app.post('/listTeamWorkers', async function (req, res) {
  * request      (Team_ID should only be there if you are an organization manager)
  * { "id": 1,
 "Worker_ID": 3,
-"Team_ID": 1        <<opt>>
+"Team_ID": [1]        <<opt>>
 }
  *     
  *
@@ -983,31 +983,36 @@ app.post('/addWorkerToTeam', async function (req, res) {
         // connect to db
         var connection = connectToDB();
         // q db
-        var str = "";
-        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
-            str = `insert into ProjectProDB.IS_PART_OF
-                    values (` + req.body.Worker_ID + `, (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + '));';
-        }
-        else if ((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) {
-            str = `insert into ProjectProDB.IS_PART_OF
-                    values (` + req.body.Worker_ID + `, ` + req.body.Team_ID + ');';
-        }
-        if (str != "") {
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err)
-                    res.send({ status: false });
-                }
-                else {
-                    res.send({ status: true });
-                };
-            });
+        var currentStatus = true;
+        if ((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID == undefined)) {
+            res.send({
+                currentStatus: false,
+                error_message: "Admin must provide Team_ID"
+            })
         }
         else {
-            res.send({
-                status: false,
-                error_message: "Error: organization manager must specify Team_ID"
-            })
+            for (var i = 0; ((i < req.body.Team_ID.length) || ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (i < 1))); i++) {
+                var str = "";
+                if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
+                    str = `insert into ProjectProDB.IS_PART_OF
+                    values (` + req.body.Worker_ID + `, (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + '));';
+                }
+                else {
+                    str = `insert into ProjectProDB.IS_PART_OF
+                    values (` + req.body.Worker_ID + `, ` + req.body.Team_ID[i] + ');';
+                }
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        currentStatus = currentStatus && false;
+                    }
+                    else {
+                        currentStatus = currentStatus && true;
+                    };
+                });
+
+            }
+            res.send({"status": currentStatus })
         }
         connection.end();
         console.log('connection closed in addWorkerToTeam');
@@ -2273,8 +2278,8 @@ app.post('/editTeam', async function (req, res) {
         var isEmployee = await checkExistsWhere(req.body.Supervisor_ID, "WORKERS", "Worker_ID", "Worker_type = \'EMPLOYEE\';");
         if (isEmployee) {
             // connect to db
-            var unique = await checkUnique(req.body.Team_name, "TEAMS", "Team_name");
-            if (unique) {
+            var unique = await checkExistsWhere(req.body.Team_name, "TEAMS", "Team_name", "Team_ID <> " + req.body.Team_ID + ";");
+            if (!unique) {
                 var connection = connectToDB();
                 // q db
                 var str = `update ProjectProDB.TEAMS set Team_name = \'` + req.body.Team_name +
@@ -2576,7 +2581,7 @@ app.post('/editTask', async function (req, res) {
     var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
     if (permission) {
         console.log('permission granted');
-        var isUnique = await checkUnique(req.body.Task_name, "TASKS", "Task_name")
+        var isUnique = await checkExistsWhere(req.body.Task_name, "TASKS", "Task_name", "Task_ID <> " + req.body.Task_ID + ";");
         if (isUnique) {
             var duplicates = false;
             var strengthsExists = true;
@@ -3222,7 +3227,7 @@ app.post('/editCause', async function (req, res) {
         console.log('permission granted');
         var exists = await checkExists(req.body.Cause_ID, "CAUSES", "Cause_ID");
         if (exists) {
-            if (!(await checkExists(req.body.Cause_name, "CAUSES", "Cause_name"))) {
+            if (!(await checkExistsWhere(req.body.Cause_name, "CAUSES", "Cause_name", "Cause_ID <> " + req.body.Cause_ID + ";"))) {
                 var connection = connectToDB();
                 var p1 = await (new Promise(function (resolve, reject) {
                     var str = `update ProjectProDB.CAUSES set Cause_name = \'` + req.body.Cause_name + `\', 
@@ -4197,5 +4202,66 @@ app.post('/listWorkersAsAdmin', async function (req, res) {
     }
     else {
         res.send({ status: false });
+    }
+});
+
+/*
+ * request  
+ * { "id": 1,
+"Team_name": "New Team",
+"Supervisor_ID": 3
+}
+ * response 
+ * {
+    "status": true
+}
+ * 
+*/
+app.post('/addTeam', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        var nextPrime = await getNextPrimary("TEAMS", "Team_ID");
+        var nameUnique = await checkUnique(req.body.Team_name, "TEAMS", "Team_name");
+        if (nameUnique) {
+            // connect to db
+            var isEmployee = await checkExistsWhere(req.body.Supervisor_ID, "WORKERS", "Worker_ID", "Worker_type = \'EMPLOYEES\';");
+            if (isEmployee) {
+                var connection = connectToDB();
+                var p1 = await (new Promise(function (resolve, reject) {
+                    var str = `insert into ProjectProDB.TEAMS
+                    values (` + nextPrime + `, ` + req.body.Supervisor_ID + `, \'` + req.body.Team_name + `\');`;
+                    connection.query(str, (err, rows) => {
+                        if (err) {
+                            console.log(err);
+                            resolve(false);
+                        }
+                        else {
+                            resolve(true);
+                        }
+                    });
+                }));
+                res.send({ status: p1 });
+                connection.end();
+                console.log('connection closed in addStrength');
+            } else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Worker Provided is not an employee"
+                });
+            }
+        } else {
+            res.send({
+                status: false,
+                error_message: "Error: Name already exists or is invalid"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
     }
 });
