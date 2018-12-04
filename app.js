@@ -2222,28 +2222,53 @@ app.post('/listTeams', async function (req, res) {
         console.log('permission granted');
         // connect to db
         var connection = connectToDB();
-        // q db
-        var str = `select * from ProjectProDB.TEAMS;`;
-        connection.query(str, (err, rows) => {
-            if (err) {
-                console.log(err)
-                res.send({ status: false });
-            }
-            else {
-                var ret = {
-                    status: true,
-                    Teams: []
+        if (req.body.Worker_ID == undefined) {
+            var str = `select * from ProjectProDB.TEAMS;`;
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ status: false });
                 }
-                for (var i = 0; i < Object.keys(rows).length; i++) {
-                    ret.Teams.push({
-                        Team_ID: rows[i].Team_ID,
-                        Team_name: rows[i].Team_name,
-                        Supervisor_ID: rows[i].Supervisor_ID
-                    })
+                else {
+                    var ret = {
+                        status: true,
+                        Teams: []
+                    }
+                    for (var i = 0; i < Object.keys(rows).length; i++) {
+                        ret.Teams.push({
+                            Team_ID: rows[i].Team_ID,
+                            Team_name: rows[i].Team_name,
+                            Supervisor_ID: rows[i].Supervisor_ID
+                        })
+                    }
+                    res.send(ret);
+                };
+            });
+        }
+        else {
+            var str = `select * from ((ProjectProDB.TEAMS as t) join (ProjectProDB.IS_PART_OF as ipo) on t.Team_ID = ipo.Team_ID)
+                        where ipo.Worker_ID = ` + req.body.Worker_ID + `;`;
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ status: false });
                 }
-                res.send(ret);
-            };
-        });
+                else {
+                    var ret = {
+                        status: true,
+                        Teams: []
+                    }
+                    for (var i = 0; i < Object.keys(rows).length; i++) {
+                        ret.Teams.push({
+                            Team_ID: rows[i].Team_ID,
+                            Team_name: rows[i].Team_name,
+                            Supervisor_ID: rows[i].Supervisor_ID
+                        })
+                    }
+                    res.send(ret);
+                };
+            });
+        }
         connection.end();
         console.log('connection closed in listTeams');
     }
@@ -2275,9 +2300,8 @@ app.post('/editTeam', async function (req, res) {
     var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
     if (permission) {
         console.log('permission granted');
-        var isEmployee = await checkExistsWhere(req.body.Supervisor_ID, "WORKERS", "Worker_ID", "Worker_type = \'EMPLOYEE\';");
-        if (isEmployee) {
-            // connect to db
+        var isSupervisor = await checkExistsWhere(req.body.Supervisor_ID, "ACCOUNT_ACCESS", "Worker_ID", "Access_level = 2 OR Access_level = 3;");
+        if (isSupervisor) {
             var unique = await checkExistsWhere(req.body.Team_name, "TEAMS", "Team_name", "Team_ID <> " + req.body.Team_ID + ";");
             if (!unique) {
                 var connection = connectToDB();
@@ -2311,7 +2335,7 @@ app.post('/editTeam', async function (req, res) {
         else {
             res.send({
                 status: false,
-                error_message: "Error: Worker is not an employee"
+                error_message: "Error: Worker is not Supervisor"
             });
         }
     }
@@ -4226,8 +4250,8 @@ app.post('/addTeam', async function (req, res) {
         var nameUnique = await checkUnique(req.body.Team_name, "TEAMS", "Team_name");
         if (nameUnique) {
             // connect to db
-            var isEmployee = await checkExistsWhere(req.body.Supervisor_ID, "WORKERS", "Worker_ID", "Worker_type = \'EMPLOYEES\';");
-            if (isEmployee) {
+            var isSupervisor = await checkExistsWhere(req.body.Supervisor_ID, "ACCOUNT_ACCESS", "Worker_ID", "Access_level = 2 OR Access_level = 3;");
+            if (isSupervisor) {
                 var connection = connectToDB();
                 var p1 = await (new Promise(function (resolve, reject) {
                     var str = `insert into ProjectProDB.TEAMS
@@ -4248,7 +4272,7 @@ app.post('/addTeam', async function (req, res) {
             } else {
                 res.send({
                     status: false,
-                    error_message: "Error: Worker Provided is not an employee"
+                    error_message: "Error: Worker Provided is not a Team manager"
                 });
             }
         } else {
@@ -4263,5 +4287,67 @@ app.post('/addTeam', async function (req, res) {
             status: false,
             error_message: "Error: Invalid Permissions"
         });
+    }
+});
+
+/*
+ * request { "id": 1 }
+ *     
+ *
+ * response 
+ * {
+    "status": true,
+    "Workers": [
+        {
+            "Worker_ID": 1,
+            "Start_date": "2000-01-01T07:00:00.000Z",
+            "First_name": "Trent",
+            "Last_name": "Johnston",
+            "Worker_type": "Employee"
+        },
+        {
+            "Worker_ID": 2,
+            "Start_date": "2000-01-01T07:00:00.000Z",
+            "First_name": "Arthur",
+            "Last_name": "L",
+            "Worker_type": "Employee"
+        }
+    ]
+}
+ * 
+*/
+app.post('/listSupervisors', async function (req, res) {
+    // check for permissions
+    if (await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL)) {
+        console.log('permission granted');
+        // connect to db
+        var connection = connectToDB();
+        // q db
+        var str = `select w.* from ((ProjectProDB.WORKERS as w) join (ProjectProDB.ACCOUNT_ACCESS as a) on w.Worker_ID = a.Worker_ID)
+                where a.Access_level = 2 or a.Access_level = 3 and w.Worker_ID <> 1;`;
+        connection.query(str, (err, rows) => {
+            if (err) {
+                console.log(err)
+                res.send({ status: false });
+            }
+            else {
+                var list = [];
+                for (var i = 0; i < Object.keys(rows).length; i++) {
+                    list.push({
+                        Worker_ID: rows[i].Worker_ID,
+                        Start_date: rows[i].Start_date,
+                        First_name: rows[i].First_name,
+                        Last_name: rows[i].Last_name,
+                        Worker_type: rows[i].Worker_type
+                    });
+                }
+                res.send({ status: true, Workers: list });
+            };
+        });
+        connection.end();
+        console.log('connection closed in allWorkers');
+    }
+    else {
+        res.send({ status: false });
     }
 });
