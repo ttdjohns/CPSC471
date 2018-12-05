@@ -2438,89 +2438,97 @@ app.post('/editTeam', async function (req, res) {
         console.log('permission granted');
         var unique = await checkExistsWhere(req.body.Team_name, "TEAMS", "Team_name", "Team_ID <> " + req.body.Team_ID + ";");
         if (!unique) {
-            var connection = connectToDB();
-            var p0 = await (new Promise(function (resolve, reject) {
-                var str = `select aa.Worker_ID, aa.Access_level 
+            if (await checkExists(req.body.Supervisor_ID, "TEAMS", "Supervisor_ID")) {
+                res.send({
+                    status: false,
+                    error_message: "Error: Worker is already managing a team"
+                });
+            }
+            else {
+                var connection = connectToDB();
+                var p0 = await (new Promise(function (resolve, reject) {
+                    var str = `select aa.Worker_ID, aa.Access_level 
                         from ((ProjectProDB.TEAMS as t) join (ProjectProDB.ACCOUNT_ACCESS as aa) on t.Supervisor_ID = aa.Worker_ID)
                         where t.Team_ID = ` + req.body.Team_ID + `;`;
-                connection.query(str, (err, rows) => {
-                    if (err) {
-                        console.log(err)
-                        resolve(false);
-                    }
-                    else if (rows[0].Access_level == 2) {
-                        resolve(rows[0]);
-                    }
-                    else {
-                        resolve(false);
-                    }
-                });
-            }));
-            if (p0) {
-                var p0_1 = await (new Promise(function (resolve, reject) {
-                    var str = `update ProjectProDB.ACCOUNT_ACCESS set Access_level = 1
-                        where Worker_ID = ` + p0.Worker_ID + `;`;
                     connection.query(str, (err, rows) => {
                         if (err) {
                             console.log(err)
                             resolve(false);
                         }
+                        else if (rows[0].Access_level == 2) {
+                            resolve(rows[0]);
+                        }
                         else {
-                            resolve(true);
-                        };
+                            resolve(false);
+                        }
                     });
                 }));
-            }
-            var p02 = await (new Promise(function (resolve, reject) {
-                var str = `select aa.Access_level 
+                if (p0) {
+                    var p0_1 = await (new Promise(function (resolve, reject) {
+                        var str = `update ProjectProDB.ACCOUNT_ACCESS set Access_level = 1
+                        where Worker_ID = ` + p0.Worker_ID + `;`;
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err)
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            };
+                        });
+                    }));
+                }
+                var p02 = await (new Promise(function (resolve, reject) {
+                    var str = `select aa.Access_level 
                         from (ProjectProDB.ACCOUNT_ACCESS as aa)
                         where aa.Worker_ID = ` + req.body.Supervisor_ID + `;`;
-                connection.query(str, (err, rows) => {
-                    if (err) {
-                        console.log(err)
-                        resolve(false);
-                    }
-                    else if (rows[0].Access_level == 1) {
-                        resolve(true);
-                    }
-                    else {
-                        resolve(false);
-                    }
-                });
-            }));
-            if (p02) {
-                var p02_1 = await (new Promise(function (resolve, reject) {
-                    var str = `update ProjectProDB.ACCOUNT_ACCESS set Access_level = 2
-                        where Worker_ID = ` + req.body.Supervisor_ID + `;`;
                     connection.query(str, (err, rows) => {
                         if (err) {
                             console.log(err)
                             resolve(false);
                         }
-                        else {
+                        else if (rows[0].Access_level == 1) {
                             resolve(true);
-                        };
+                        }
+                        else {
+                            resolve(false);
+                        }
                     });
                 }));
-            }
-            var str = `update ProjectProDB.TEAMS set Team_name = \'` + req.body.Team_name +
-                `\', Supervisor_ID = ` + req.body.Supervisor_ID +
-                ` where Team_ID = ` + req.body.Team_ID + `;`
-                ;
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err)
-                    res.send({ status: false });
+                if (p02) {
+                    var p02_1 = await (new Promise(function (resolve, reject) {
+                        var str = `update ProjectProDB.ACCOUNT_ACCESS set Access_level = 2
+                        where Worker_ID = ` + req.body.Supervisor_ID + `;`;
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err)
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            };
+                        });
+                    }));
                 }
-                else {
-                    var ret = {
-                        status: true
+                var str = `update ProjectProDB.TEAMS set Team_name = \'` + req.body.Team_name +
+                    `\', Supervisor_ID = ` + req.body.Supervisor_ID +
+                    ` where Team_ID = ` + req.body.Team_ID + `;`
+                    ;
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        res.send({ status: false });
                     }
-                    res.send(ret);
-                };
-            });
-            connection.end();
-            console.log('connection closed in editTeam');
+                    else {
+                        var ret = {
+                            status: true
+                        }
+                        res.send(ret);
+                    };
+                });
+                connection.end();
+                console.log('connection closed in editTeam');
+            }
         }
         else {
             res.send({
@@ -4471,55 +4479,63 @@ app.post('/addTeam', async function (req, res) {
         var nextPrime = await getNextPrimary("TEAMS", "Team_ID");
         var nameUnique = await checkUnique(req.body.Team_name, "TEAMS", "Team_name");
         if (nameUnique) {
-            var connection = connectToDB();
-            var p0 = await (new Promise(function (resolve, reject) {
-                var str = `select aa.Access_level 
-                        from (ProjectProDB.ACCOUNT_ACCESS as aa)
-                        where Worker_ID = ` + req.body.Supervisor_ID + `;`;
-                connection.query(str, (err, rows) => {
-                    if (err) {
-                        console.log(err)
-                        resolve(false);
-                    }
-                    else if (rows[0].Access_level == 1) {
-                        resolve(true);
-                    }
-                    else {
-                        resolve(false);
-                    }
+            if (await checkExists(req.body.Supervisor_ID, "TEAMS", "Supervisor_ID")) {
+                res.send({
+                    status: false,
+                    error_message: "Error: Worker is already managing a team"
                 });
-            }));
-            if (p0) {
-                var p0_1 = await (new Promise(function (resolve, reject) {
-                    var str = `update ProjectProDB.ACCOUNT_ACCESS set Access_level = 2
+            }
+            else {
+                var connection = connectToDB();
+                var p0 = await (new Promise(function (resolve, reject) {
+                    var str = `select aa.Access_level 
+                        from (ProjectProDB.ACCOUNT_ACCESS as aa)
                         where Worker_ID = ` + req.body.Supervisor_ID + `;`;
                     connection.query(str, (err, rows) => {
                         if (err) {
                             console.log(err)
                             resolve(false);
                         }
-                        else {
+                        else if (rows[0].Access_level == 1) {
                             resolve(true);
-                        };
+                        }
+                        else {
+                            resolve(false);
+                        }
                     });
                 }));
-            }
-            var p1 = await (new Promise(function (resolve, reject) {
-                var str = `insert into ProjectProDB.TEAMS
+                if (p0) {
+                    var p0_1 = await (new Promise(function (resolve, reject) {
+                        var str = `update ProjectProDB.ACCOUNT_ACCESS set Access_level = 2
+                        where Worker_ID = ` + req.body.Supervisor_ID + `;`;
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err)
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            };
+                        });
+                    }));
+                }
+                var p1 = await (new Promise(function (resolve, reject) {
+                    var str = `insert into ProjectProDB.TEAMS
                     values (` + nextPrime + `, ` + req.body.Supervisor_ID + `, \'` + req.body.Team_name + `\');`;
-                connection.query(str, (err, rows) => {
-                    if (err) {
-                        console.log(err);
-                        resolve(false);
-                    }
-                    else {
-                        resolve(true);
-                    }
-                });
-            }));
-            res.send({ status: p1 });
-            connection.end();
-            console.log('connection closed in addTeam');
+                    connection.query(str, (err, rows) => {
+                        if (err) {
+                            console.log(err);
+                            resolve(false);
+                        }
+                        else {
+                            resolve(true);
+                        }
+                    });
+                }));
+                res.send({ status: p1 });
+                connection.end();
+                console.log('connection closed in addTeam');
+            }
         } else {
             res.send({
                 status: false,
