@@ -2337,12 +2337,12 @@ app.post('/listTeams', async function (req, res) {
     "Teams": [
         {
             "Team_ID": 1,
-            "Team_name": "capital punishment",
+            "Team_name": "dsaofn",
             "Supervisor_ID": 2
         },
         {
             "Team_ID": 2,
-            "Team_name": "Assisted Suicide",
+            "Team_name": "dnsafn",
             "Supervisor_ID": 4
         }
     ]
