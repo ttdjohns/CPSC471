@@ -1060,43 +1060,45 @@ app.post('/removeWorkerFromTeam', async function (req, res) {
     if (permission) {
         console.log('permission granted');
         // connect to db
-        var connection = connectToDB();
-        // q db
-        var str = "";
-        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (req.body.id != req.body.Worker_ID)) {
-            str = `delete from ProjectProDB.IS_PART_OF
+        if (await checkExists(req.body.Worker_ID, "WORKERS", "Worker_ID")
+            && !(await checkExistsWhere(req.body.Worker_ID, "TEAMS", "Supervisor_ID", "Team_ID = " + req.body.Team_ID))) {
+            var connection = connectToDB();
+            // q db
+            var str = "";
+            if ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (req.body.id != req.body.Worker_ID)) {
+                str = `delete from ProjectProDB.IS_PART_OF
                     where Worker_ID = ` + req.body.Worker_ID + ` and Team_ID = (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + ');';
-        }
-        else if ((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) {
-            str = `delete from ProjectProDB.IS_PART_OF
+            }
+            else if ((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) {
+                str = `delete from ProjectProDB.IS_PART_OF
                     where Worker_ID = ` + req.body.Worker_ID + ` and Team_ID = ` + req.body.Team_ID + `
                     and Worker_ID not in (select Supervisor_ID from ProjectProDB.TEAMS where Team_ID = ` + req.body.Team_ID + `);`;
-        }
-        if (str != "") {
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err)
-                    res.send({ status: false });
-                }
-                else if (rows.affected_rows > 0 ){
-                    res.send({ status: true });
-                }
-                else {
-                    res.send({
-                        status: false,
-                        error_message: "Worker_ID undefined or attemped to remove Team Supervisor from Team"
-                    })
-                }
-            });
-        }
-        else {
+            }
+            if (str != "") {
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        res.send({ status: false });
+                    }
+                    else {
+                        res.send({ status: true });
+                    };
+                });
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: organization manager must specify Team_ID"
+                })
+            }
+            connection.end();
+            console.log('connection closed in deleteWorkerFromTeam');
+        } else {
             res.send({
                 status: false,
-                error_message: "Error: organization manager must specify Team_ID"
+                error_message: "Worker_ID undefined or attemped to remove Team Supervisor from Team"
             })
         }
-        connection.end();
-        console.log('connection closed in deleteWorkerFromTeam');
     }
     else {
         res.send({
