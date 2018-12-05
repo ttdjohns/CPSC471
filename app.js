@@ -908,48 +908,56 @@ app.post('/listTeamWorkers', async function (req, res) {
     if (permission) {
         console.log('permission granted');
         // connect to db
-        var connection = connectToDB();
-        // q db
-        var str = "";
-        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
-            str = `select w.Worker_ID, w.First_name, w.Last_name, w.Worker_type from ((ProjectProDB.WORKERS as w) join (ProjectProDB.IS_PART_OF as ipo) on w.Worker_ID = ipo.Worker_ID)
-                    where ipo.Team_ID = (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + ');';
-        }
-        else if ((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) {
-            str = `select w.Worker_ID, w.First_name, w.Last_name, w.Worker_type from ((ProjectProDB.WORKERS as w) join (ProjectProDB.IS_PART_OF as ipo) on w.Worker_ID = ipo.Worker_ID)
-                    where ipo.Team_ID = ` + req.body.Team_ID + ';';
-        }
-        if (str != "") {
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err)
-                    res.send({ status: false });
-                }
-                else {
-                    var ret = {
-                        status: true,
-                        Workers: []
-                    }
-                    for (var i = 0; i < Object.keys(rows).length; i++) {
-                        ret.Workers.push({
-                            Worker_ID: rows[i].Worker_ID,
-                            First_name: rows[i].First_name,
-                            Last_name: rows[i].Last_name,
-                            Worker_type: rows[i].Worker_type
-                        })
-                    }
-                    res.send(ret);
-                };
+        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (!(await checkExists(req.body.id, "TEAMS", "Supervisor_ID")))) {
+            res.send({
+                currentStatus: false,
+                error_message: "Team manager is not currently supervising a team"
             });
         }
         else {
-            res.send({
-                status: false, 
-                error_message: "Error: organization manager must specify Team_ID"
-            })
+            var connection = connectToDB();
+            // q db
+            var str = "";
+            if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
+                str = `select w.Worker_ID, w.First_name, w.Last_name, w.Worker_type from ((ProjectProDB.WORKERS as w) join (ProjectProDB.IS_PART_OF as ipo) on w.Worker_ID = ipo.Worker_ID)
+                    where ipo.Team_ID = (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + ');';
+            }
+            else if ((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) {
+                str = `select w.Worker_ID, w.First_name, w.Last_name, w.Worker_type from ((ProjectProDB.WORKERS as w) join (ProjectProDB.IS_PART_OF as ipo) on w.Worker_ID = ipo.Worker_ID)
+                    where ipo.Team_ID = ` + req.body.Team_ID + ';';
+            }
+            if (str != "") {
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err)
+                        res.send({ status: false });
+                    }
+                    else {
+                        var ret = {
+                            status: true,
+                            Workers: []
+                        }
+                        for (var i = 0; i < Object.keys(rows).length; i++) {
+                            ret.Workers.push({
+                                Worker_ID: rows[i].Worker_ID,
+                                First_name: rows[i].First_name,
+                                Last_name: rows[i].Last_name,
+                                Worker_type: rows[i].Worker_type
+                            })
+                        }
+                        res.send(ret);
+                    };
+                });
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: organization manager must specify Team_ID"
+                })
+            }
+            connection.end();
+            console.log('connection closed in listTeamWorkers');
         }
-        connection.end();
-        console.log('connection closed in listTeamWorkers');
     }
     else {
         res.send({
@@ -989,6 +997,12 @@ app.post('/addWorkerToTeam', async function (req, res) {
                 currentStatus: false,
                 error_message: "Admin must provide Team_ID"
             })
+        }
+        else if ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (!(await checkExists(req.body.id, "TEAMS", "Supervisor_ID")))) {
+             res.send({
+                currentStatus: false,
+                error_message: "Team manager is not currently supervising a team"
+             });
         }
         else {
             for (var i = 0; ((i < req.body.Team_ID.length) || ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (i < 1))); i++) {
@@ -1269,55 +1283,77 @@ function getNextPrimary(tableName, keyName) {
 app.post('/addProject', async function (req, res) {
     // check for permissions
     var permission = await verifyPermissions((req.body.id), TEAM_MANAGER_PERMISSION_LEVEL);
-    console.log(permission);
-    if (((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) ||
-            (permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
-        console.log('permission granted');
-        var nextPrime = await getNextPrimary("PROJECTS", "Project_ID");
-        console.log(nextPrime);
-        // connect to db
-        var connection = connectToDB();
-        var p1 = await (new Promise(function (resolve, reject) {
-            var str = `insert into ProjectProDB.PROJECTS
-                    values (` + nextPrime + `, \'` + req.body.Project_name + `\', \'` + req.body.Project_description + `\');`; 
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    resolve(false);
+    if (permission) {
+        if (!(await checkExists(req.body.Project_name, "PROJECTS", "Project_name"))) {
+            if (((permission == ADMIN_PERMISSION_LEVEL) && (req.body.Team_ID != undefined)) ||
+                (permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
+                if ((permission == ADMIN_PERMISSION_LEVEL) || (await checkExists(req.body.id, "TEAMS", "Supervisor_ID"))) {
+                    console.log('permission granted');
+                    var nextPrime = await getNextPrimary("PROJECTS", "Project_ID");
+                    // connect to db
+                    var connection = connectToDB();
+                    var p1 = await (new Promise(function (resolve, reject) {
+                        var str = `insert into ProjectProDB.PROJECTS
+                    values (` + nextPrime + `, \'` + req.body.Project_name + `\', \'` + req.body.Project_description + `\');`;
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err);
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            }
+                        });
+                    }));
+                    var str = "";
+                    if (permission == TEAM_MANAGER_PERMISSION_LEVEL) {
+                        str = `insert into ProjectProDB.WORKS_ON
+                    values (` + nextPrime + `, (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + '));';
+                    }
+                    else {
+                        str = `insert into ProjectProDB.WORKS_ON
+                    values (` + nextPrime + `, ` + req.body.Team_ID + ');';
+                    }
+                    var p2 = await (new Promise(function (resolve, reject) {
+                        connection.query(str, (err, rows) => {
+                            if (err) {
+                                console.log(err);
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            }
+                        });
+                    }));
+                    res.send({ status: (p1 && p2) });
+                    connection.end();
+                    console.log('connection closed in addProject');
                 }
                 else {
-                    resolve(true);
+                    res.send({
+                        status: false,
+                        error_message: "Error: Team manager does not currently supervise a team"
+                    });
                 }
-            });
-        }));
-        var str = "";
-        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
-            str = `insert into ProjectProDB.WORKS_ON
-                    values (` + nextPrime + `, (select Team_ID from ProjectProDB.TEAMS where Supervisor_ID = ` + req.body.id + '));';
+            }
+            else {
+                res.send({
+                    status: false,
+                    error_message: "Error: Organization manager must specify a Team to be initially working on the project"
+                });
+            }
         }
         else {
-            str = `insert into ProjectProDB.WORKS_ON
-                    values (` + nextPrime + `, ` + req.body.Team_ID + ');';
-        }
-        var p2 = await (new Promise(function (resolve, reject) {
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    resolve(false);
-                }
-                else {
-                    resolve(true);
-                }
+            res.send({
+                status: false,
+                error_message: "Error: Project Name already exists"
             });
-        }));
-        res.send({ status: (p1 && p2) });
-        connection.end();
-        console.log('connection closed in addProject');
+        }
     }
     else {
         res.send({
             status: false,
-            error_message: "Error: Invalid Permissions or organization manager must specify Team_ID"
+            error_message: "Error: Invalid Permissions"
         });
     }
 });
@@ -1344,71 +1380,79 @@ app.post('/removeTeamFromProject', async function (req, res) {
         (permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
         console.log('permission granted');
         // connect to db
-        var connection = connectToDB();
-        var p1 = await (new Promise(function (resolve, reject) {
-            var str = "";
-            if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
-                str = `delete from ProjectProDB.PROJECT_TASKS
+        if ((permission == TEAM_MANAGER_PERMISSION_LEVEL) && (!(await checkExists(req.body.id, "TEAMS", "Supervisor_ID")))) {
+            res.send({
+                currentStatus: false,
+                error_message: "Team manager is not currently supervising a team"
+            });
+        }
+        else {
+            var connection = connectToDB();
+            var p1 = await (new Promise(function (resolve, reject) {
+                var str = "";
+                if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
+                    str = `delete from ProjectProDB.PROJECT_TASKS
                         where Worker_ID in (select ipo.Worker_ID from (ProjectProDB.IS_PART_OF as ipo)
                                                 where ipo.Team_ID in (select t.Team_ID from (ProjectProDB.TEAMS as t)
                                                                     where t.Supervisor_ID = ` + req.body.id + `))
                                 and Project_ID = ` + req.body.Project_ID + `;`;
-            }
-            else {
-                str = `delete from ProjectProDB.PROJECT_TASKS
+                }
+                else {
+                    str = `delete from ProjectProDB.PROJECT_TASKS
                         where Project_ID = ` + req.body.Project_ID + ` and 
                         Worker_ID in (select ipo.Worker_ID from (ProjectProDB.IS_PART_OF as ipo) where ipo.Team_ID = ` + req.body.Team_ID + `);`;
-            }
-            console.log(str);
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    resolve(false);
                 }
-                else {
-                    resolve(true);
-                }
-            });
-        }));
-        var p2 = await (new Promise(function (resolve, reject) {
-            var str = "";
-            if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
-                str = `delete from ProjectProDB.WORKS_ON
+                console.log(str);
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
+                });
+            }));
+            var p2 = await (new Promise(function (resolve, reject) {
+                var str = "";
+                if ((permission == TEAM_MANAGER_PERMISSION_LEVEL)) {
+                    str = `delete from ProjectProDB.WORKS_ON
                     where Team_ID in (select t.Team_ID from (ProjectProDB.TEAMS as t) where Supervisor_ID = ` + req.body.id + `) 
                            and Project_ID = ` + req.body.Project_ID + `; `;
-            }
-            else {
-                str = `delete from ProjectProDB.WORKS_ON
+                }
+                else {
+                    str = `delete from ProjectProDB.WORKS_ON
                     where Team_ID = ` + req.body.Team_ID + `
                            and Project_ID = ` + req.body.Project_ID + `; `;
-            }
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    resolve(false);
                 }
-                else {
-                    resolve(true);
-                }
-            });
-        }));
-        var p3 = await (new Promise(function (resolve, reject) {
-            var str = `delete from ProjectProDB.PROJECTS
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
+                });
+            }));
+            var p3 = await (new Promise(function (resolve, reject) {
+                var str = `delete from ProjectProDB.PROJECTS
                     where Project_ID not in (select Project_ID from ProjectProDB.WORKS_ON);`;
-            connection.query(str, (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    resolve(false);
-                }
-                else {
-                    resolve(true);
-                }
-            });
-        }));
+                connection.query(str, (err, rows) => {
+                    if (err) {
+                        console.log(err);
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
+                });
+            }));
 
-        res.send({ status: (p1 && p2 && p3) });
-        connection.end();
-        console.log('connection closed in removeTeamFromProject');
+            res.send({ status: (p1 && p2 && p3) });
+            connection.end();
+            console.log('connection closed in removeTeamFromProject');
+        }
     }
     else {
         res.send({
