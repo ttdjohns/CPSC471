@@ -2327,6 +2327,98 @@ app.post('/listTeams', async function (req, res) {
 /*
  //* request
  * { "id": 1,
+"Project_ID": 2
+}
+ *     
+ *
+ * response 
+ * {
+    "status": true,
+    "Teams": [
+        {
+            "Team_ID": 1,
+            "Team_name": "capital punishment",
+            "Supervisor_ID": 2
+        },
+        {
+            "Team_ID": 2,
+            "Team_name": "Assisted Suicide",
+            "Supervisor_ID": 4
+        }
+    ]
+}
+ * 
+*/
+app.post('/listTeamsWorkingOnProject', async function (req, res) {
+    // check for permissions
+    var permission = await verifyPermissions((req.body.id), ADMIN_PERMISSION_LEVEL);
+    if (permission) {
+        console.log('permission granted');
+        // connect to db
+        var connection = connectToDB();
+        if (req.body.Worker_ID == undefined) {
+            var str = `select t.* from ((ProjectProDB.TEAMS as t) join (ProjectProDB.WORKS_ON as wo) on t.Team_ID = wo.Team_ID)
+                        where wo.Project_ID = ` + req.body.Project_ID + `;`;
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ status: false });
+                }
+                else {
+                    var ret = {
+                        status: true,
+                        Teams: []
+                    }
+                    for (var i = 0; i < Object.keys(rows).length; i++) {
+                        ret.Teams.push({
+                            Team_ID: rows[i].Team_ID,
+                            Team_name: rows[i].Team_name,
+                            Supervisor_ID: rows[i].Supervisor_ID
+                        })
+                    }
+                    res.send(ret);
+                };
+            });
+        }
+        else {
+            var str = `select * from (((ProjectProDB.TEAMS as t) join (ProjectProDB.IS_PART_OF as ipo) on t.Team_ID = ipo.Team_ID)
+                        join (ProjectProDB.WORKS_ON as wo) on t.Team_ID = wo.Team_ID)
+                        where ipo.Worker_ID = ` + req.body.Worker_ID + `, wo.Project_ID = ` + req.body.Project_ID + `;`;
+            connection.query(str, (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    res.send({ status: false });
+                }
+                else {
+                    var ret = {
+                        status: true,
+                        Teams: []
+                    }
+                    for (var i = 0; i < Object.keys(rows).length; i++) {
+                        ret.Teams.push({
+                            Team_ID: rows[i].Team_ID,
+                            Team_name: rows[i].Team_name,
+                            Supervisor_ID: rows[i].Supervisor_ID
+                        })
+                    }
+                    res.send(ret);
+                };
+            });
+        }
+        connection.end();
+        console.log('connection closed in listTeamsWorkingOnProject');
+    }
+    else {
+        res.send({
+            status: false,
+            error_message: "Error: Invalid Permissions"
+        });
+    }
+});
+
+/*
+ //* request
+ * { "id": 1,
 "Team_ID": 1,
 "Supervisor_ID": 1,
 "Team_name": "New capital punishment"
