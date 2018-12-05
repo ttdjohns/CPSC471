@@ -336,7 +336,7 @@ values (1, 'Soup kitchen', 'Feeding the poor'),
 (4, 'The walk', 'Walk the walk');
         
 insert into projectprodb.TEAMS
-values (1, 2, 'The dream team'),
+values (1, 4, 'The dream team'),
 (2, 2, 'Fast but not furious'),
 (3, 3, 'Leading team'),
 (4, 8, 'Speed demons');
