@@ -1581,7 +1581,6 @@ app.post('/listProjectTasks', async function (req, res) {
                     Team_name: p1[i].Team_name
                 })
             }
-
             res.send({ status: true, Project_tasks: list });
         } else { res.send({ status: false, error_message: "an error occured" }); }
         connection.end();
@@ -1964,7 +1963,6 @@ app.post('/addProjectTask', async function (req, res) {
                 str = `insert ProjectProDB.PROJECT_TASKS values (` + req.body.Worker_ID + `, ` + req.body.Task_ID + `, 
                         ` + req.body.Project_ID + ', ' + req.body.Team_ID + ');'
             }
-
             connection.query(str, (err, rows) => {
                 if (err) {
                     console.log(err)
@@ -4322,7 +4320,7 @@ app.post('/editWorkerAsAdmin', async function (req, res) {
         console.log('permission granted');
         if (req.body.Worker_type != undefined) {
             if (await checkExists(req.body.Worker_ID, "WORKERS", "Worker_ID")) {
-                if (!(await checkExists(req.body.SSN, "WORKERS", "SSN"))) {
+                if (!(await checkExistsWhere(req.body.SSN, "WORKERS", "SSN", "Worker_ID <> " + req.body.Worker_ID + ";"))) {
                     if ((req.body.Worker_type).toUpperCase() == "EMPLOYEE") {
                         var validSSN = true;
                         if (req.body.SSN.length != 9) {
