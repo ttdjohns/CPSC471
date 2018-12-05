@@ -2438,7 +2438,7 @@ app.post('/editTeam', async function (req, res) {
         console.log('permission granted');
         var unique = await checkExistsWhere(req.body.Team_name, "TEAMS", "Team_name", "Team_ID <> " + req.body.Team_ID + ";");
         if (!unique) {
-            if (await checkExists(req.body.Supervisor_ID, "TEAMS", "Supervisor_ID")) {
+            if (await checkExistsWhere(req.body.Supervisor_ID, "TEAMS", "Supervisor_ID", "Team_ID <> " + req.body.Team_ID + ";")) {
                 res.send({
                     status: false,
                     error_message: "Error: Worker is already managing a team"
