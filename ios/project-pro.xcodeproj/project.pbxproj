@@ -1,0 +1,752 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		162E40DC21B38DD100B6BE70 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162E40DB21B38DD100B6BE70 /* AppDelegate.swift */; };
+		162E40E121B38DD100B6BE70 /* Auth.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 162E40DF21B38DD100B6BE70 /* Auth.storyboard */; };
+		162E40E621B38DD200B6BE70 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 162E40E421B38DD200B6BE70 /* LaunchScreen.storyboard */; };
+		162E40EE21B38E7800B6BE70 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162E40ED21B38E7800B6BE70 /* Endpoint.swift */; };
+		1635719C21B47679006576EE /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1635719B21B47679006576EE /* AuthViewController.swift */; };
+		163571A321B47A98006576EE /* Worker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 163571A221B47A98006576EE /* Worker.storyboard */; };
+		163571A521B47AB5006576EE /* Admin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 163571A421B47AB5006576EE /* Admin.storyboard */; };
+		163571A721B47ABE006576EE /* Manager.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 163571A621B47ABE006576EE /* Manager.storyboard */; };
+		163571AA21B47BB4006576EE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571A921B47BB4006576EE /* User.swift */; };
+		163571AC21B47DE6006576EE /* Authorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571AB21B47DE6006576EE /* Authorization.swift */; };
+		163571AE21B4AB84006576EE /* WorkerTasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571AD21B4AB84006576EE /* WorkerTasksViewController.swift */; };
+		163571B021B4AB90006576EE /* WorkerStrengthsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571AF21B4AB90006576EE /* WorkerStrengthsViewController.swift */; };
+		163571B221B4AB99006576EE /* WorkerProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571B121B4AB99006576EE /* WorkerProfileViewController.swift */; };
+		163571B621B4B1F1006576EE /* EditWorkerProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571B521B4B1F1006576EE /* EditWorkerProfileViewController.swift */; };
+		163571BC21B4CC97006576EE /* WorkerStrength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571BB21B4CC97006576EE /* WorkerStrength.swift */; };
+		163571BE21B4CE38006576EE /* StrengthTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571BD21B4CE38006576EE /* StrengthTableViewCell.swift */; };
+		163571C221B4D398006576EE /* EditWorkerStrengthsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571C121B4D398006576EE /* EditWorkerStrengthsViewController.swift */; };
+		163571C521B4EB05006576EE /* AssignedTasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571C421B4EB05006576EE /* AssignedTasksViewController.swift */; };
+		163571C721B4EB14006576EE /* DesiredTasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571C621B4EB14006576EE /* DesiredTasksViewController.swift */; };
+		163571C921B4EDF2006576EE /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571C821B4EDF2006576EE /* Task.swift */; };
+		163571CD21B4F40B006576EE /* EditWorkerDesiredTasksTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163571CC21B4F40B006576EE /* EditWorkerDesiredTasksTableViewController.swift */; };
+		16D1043E21B50A2F0055C572 /* DonorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1043D21B50A2F0055C572 /* DonorsViewController.swift */; };
+		16D1044021B50ABD0055C572 /* Donor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1043F21B50ABD0055C572 /* Donor.swift */; };
+		16D1044221B5124D0055C572 /* DonorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1044121B5124D0055C572 /* DonorTableViewCell.swift */; };
+		16D1044421B5165E0055C572 /* AddDonorTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1044321B5165E0055C572 /* AddDonorTableViewController.swift */; };
+		16D1044921B531290055C572 /* DonationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1044821B531290055C572 /* DonationsViewController.swift */; };
+		16D1044B21B531380055C572 /* Donation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1044A21B531380055C572 /* Donation.swift */; };
+		16D1044D21B531850055C572 /* AddDonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1044C21B531850055C572 /* AddDonationViewController.swift */; };
+		16D1044F21B531C30055C572 /* EditDonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1044E21B531C30055C572 /* EditDonationViewController.swift */; };
+		16D1045121B533070055C572 /* DonationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1045021B533070055C572 /* DonationTableViewCell.swift */; };
+		16D1045621B537C00055C572 /* CausesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1045521B537C00055C572 /* CausesViewController.swift */; };
+		16D1045821B537CE0055C572 /* AddCauseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1045721B537CE0055C572 /* AddCauseTableViewController.swift */; };
+		16D1045A21B537ED0055C572 /* EditCauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1045921B537ED0055C572 /* EditCauseViewController.swift */; };
+		16D1046021B539840055C572 /* AddStrengthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1045F21B539840055C572 /* AddStrengthViewController.swift */; };
+		16D1046221B53A1E0055C572 /* EditStrengthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1046121B53A1E0055C572 /* EditStrengthViewController.swift */; };
+		16D1046421B53A320055C572 /* StrengthsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1046321B53A320055C572 /* StrengthsViewController.swift */; };
+		16D1046721B5C2060055C572 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 16D1046621B5C2060055C572 /* Assets.xcassets */; };
+		16D1046921B5C3ED0055C572 /* TextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1046821B5C3ED0055C572 /* TextFieldCell.swift */; };
+		16D1046B21B5C65B0055C572 /* Cause.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1046A21B5C65B0055C572 /* Cause.swift */; };
+		16D1046D21B5C8390055C572 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1046C21B5C8390055C572 /* TasksViewController.swift */; };
+		16D1046F21B5C84D0055C572 /* AddTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1046E21B5C84D0055C572 /* AddTaskViewController.swift */; };
+		16D1047121B5C8580055C572 /* EditTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1047021B5C8580055C572 /* EditTaskViewController.swift */; };
+		16D1047521B5D7540055C572 /* EditDonorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1047421B5D7530055C572 /* EditDonorViewController.swift */; };
+		16D1047721B63BD00055C572 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1047621B63BD00055C572 /* Extensions.swift */; };
+		16D1047921B645DF0055C572 /* Strength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1047821B645DF0055C572 /* Strength.swift */; };
+		16D1047B21B64E240055C572 /* TeamsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1047A21B64E240055C572 /* TeamsViewController.swift */; };
+		16D1047D21B64E320055C572 /* EditTeamTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1047C21B64E320055C572 /* EditTeamTableViewController.swift */; };
+		16D1048121B64E5D0055C572 /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048021B64E5D0055C572 /* Team.swift */; };
+		16D1048321B700FF0055C572 /* AdminTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048221B700FF0055C572 /* AdminTask.swift */; };
+		16D1048521B73B6E0055C572 /* ProjectsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048421B73B6E0055C572 /* ProjectsViewController.swift */; };
+		16D1048721B73BA00055C572 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048621B73BA00055C572 /* Project.swift */; };
+		16D1048921B73C720055C572 /* AddProjectTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048821B73C720055C572 /* AddProjectTableViewController.swift */; };
+		16D1048C21B742270055C572 /* ProjectTasksTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048B21B742270055C572 /* ProjectTasksTableViewController.swift */; };
+		16D1048E21B743EF0055C572 /* ProjectTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048D21B743EF0055C572 /* ProjectTaskTableViewCell.swift */; };
+		16D1049021B743FA0055C572 /* ProjectTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1048F21B743FA0055C572 /* ProjectTask.swift */; };
+		16D1049221B747B70055C572 /* AddProjectTaskTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1049121B747B70055C572 /* AddProjectTaskTableViewController.swift */; };
+		16D1049921B76F8F0055C572 /* AddProjectTaskChooseTaskTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1049821B76F8F0055C572 /* AddProjectTaskChooseTaskTableViewController.swift */; };
+		16D1049B21B76FA10055C572 /* AddProjectTaskChooseWorkerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1049A21B76FA10055C572 /* AddProjectTaskChooseWorkerTableViewController.swift */; };
+		16D1049D21B76FAF0055C572 /* AddProjectTaskChooseTeamTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D1049C21B76FAF0055C572 /* AddProjectTaskChooseTeamTableViewController.swift */; };
+		16D104A121B771F60055C572 /* ProjectTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104A021B771F60055C572 /* ProjectTableViewController.swift */; };
+		16D104A321B776680055C572 /* LabelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104A221B776680055C572 /* LabelCell.swift */; };
+		16D104A521B77A1A0055C572 /* WorkerForTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104A421B77A1A0055C572 /* WorkerForTask.swift */; };
+		16D104A721B795770055C572 /* WorkerForTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104A621B795770055C572 /* WorkerForTaskTableViewCell.swift */; };
+		16D104A921B7AA950055C572 /* TeamTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104A821B7AA950055C572 /* TeamTableViewController.swift */; };
+		16D104AB21B83A240055C572 /* EditWorkerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104AA21B83A240055C572 /* EditWorkerTableViewController.swift */; };
+		16D104AE21B849760055C572 /* AdminWorkersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104AD21B849760055C572 /* AdminWorkersTableViewController.swift */; };
+		16D104B021B8498B0055C572 /* AdminWorkerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104AF21B8498B0055C572 /* AdminWorkerTableViewController.swift */; };
+		16D104B221B84CE00055C572 /* AdminEditWorkerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104B121B84CE00055C572 /* AdminEditWorkerTableViewController.swift */; };
+		16D104B421B850F20055C572 /* AddTeamTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104B321B850F20055C572 /* AddTeamTableViewController.swift */; };
+		16D104B821B856C40055C572 /* AdminWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104B721B856C40055C572 /* AdminWorker.swift */; };
+		16D104BC21B867FD0055C572 /* AdminAddWorkerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D104BB21B867FD0055C572 /* AdminAddWorkerTableViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		162E40D821B38DD100B6BE70 /* project-pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "project-pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		162E40DB21B38DD100B6BE70 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		162E40E021B38DD100B6BE70 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Auth.storyboard; sourceTree = "<group>"; };
+		162E40E521B38DD200B6BE70 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		162E40E721B38DD200B6BE70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		162E40ED21B38E7800B6BE70 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
+		1635719B21B47679006576EE /* AuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
+		163571A221B47A98006576EE /* Worker.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Worker.storyboard; sourceTree = "<group>"; };
+		163571A421B47AB5006576EE /* Admin.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Admin.storyboard; sourceTree = "<group>"; };
+		163571A621B47ABE006576EE /* Manager.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Manager.storyboard; sourceTree = "<group>"; };
+		163571A921B47BB4006576EE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		163571AB21B47DE6006576EE /* Authorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authorization.swift; sourceTree = "<group>"; };
+		163571AD21B4AB84006576EE /* WorkerTasksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerTasksViewController.swift; sourceTree = "<group>"; };
+		163571AF21B4AB90006576EE /* WorkerStrengthsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerStrengthsViewController.swift; sourceTree = "<group>"; };
+		163571B121B4AB99006576EE /* WorkerProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerProfileViewController.swift; sourceTree = "<group>"; };
+		163571B521B4B1F1006576EE /* EditWorkerProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWorkerProfileViewController.swift; sourceTree = "<group>"; };
+		163571BB21B4CC97006576EE /* WorkerStrength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerStrength.swift; sourceTree = "<group>"; };
+		163571BD21B4CE38006576EE /* StrengthTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrengthTableViewCell.swift; sourceTree = "<group>"; };
+		163571C121B4D398006576EE /* EditWorkerStrengthsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWorkerStrengthsViewController.swift; sourceTree = "<group>"; };
+		163571C421B4EB05006576EE /* AssignedTasksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignedTasksViewController.swift; sourceTree = "<group>"; };
+		163571C621B4EB14006576EE /* DesiredTasksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesiredTasksViewController.swift; sourceTree = "<group>"; };
+		163571C821B4EDF2006576EE /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		163571CC21B4F40B006576EE /* EditWorkerDesiredTasksTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWorkerDesiredTasksTableViewController.swift; sourceTree = "<group>"; };
+		16D1043D21B50A2F0055C572 /* DonorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonorsViewController.swift; sourceTree = "<group>"; };
+		16D1043F21B50ABD0055C572 /* Donor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Donor.swift; sourceTree = "<group>"; };
+		16D1044121B5124D0055C572 /* DonorTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonorTableViewCell.swift; sourceTree = "<group>"; };
+		16D1044321B5165E0055C572 /* AddDonorTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDonorTableViewController.swift; sourceTree = "<group>"; };
+		16D1044821B531290055C572 /* DonationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationsViewController.swift; sourceTree = "<group>"; };
+		16D1044A21B531380055C572 /* Donation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Donation.swift; sourceTree = "<group>"; };
+		16D1044C21B531850055C572 /* AddDonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDonationViewController.swift; sourceTree = "<group>"; };
+		16D1044E21B531C30055C572 /* EditDonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDonationViewController.swift; sourceTree = "<group>"; };
+		16D1045021B533070055C572 /* DonationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationTableViewCell.swift; sourceTree = "<group>"; };
+		16D1045521B537C00055C572 /* CausesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CausesViewController.swift; sourceTree = "<group>"; };
+		16D1045721B537CE0055C572 /* AddCauseTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCauseTableViewController.swift; sourceTree = "<group>"; };
+		16D1045921B537ED0055C572 /* EditCauseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCauseViewController.swift; sourceTree = "<group>"; };
+		16D1045F21B539840055C572 /* AddStrengthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStrengthViewController.swift; sourceTree = "<group>"; };
+		16D1046121B53A1E0055C572 /* EditStrengthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStrengthViewController.swift; sourceTree = "<group>"; };
+		16D1046321B53A320055C572 /* StrengthsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrengthsViewController.swift; sourceTree = "<group>"; };
+		16D1046621B5C2060055C572 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		16D1046821B5C3ED0055C572 /* TextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCell.swift; sourceTree = "<group>"; };
+		16D1046A21B5C65B0055C572 /* Cause.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cause.swift; sourceTree = "<group>"; };
+		16D1046C21B5C8390055C572 /* TasksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
+		16D1046E21B5C84D0055C572 /* AddTaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskViewController.swift; sourceTree = "<group>"; };
+		16D1047021B5C8580055C572 /* EditTaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTaskViewController.swift; sourceTree = "<group>"; };
+		16D1047421B5D7530055C572 /* EditDonorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDonorViewController.swift; sourceTree = "<group>"; };
+		16D1047621B63BD00055C572 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		16D1047821B645DF0055C572 /* Strength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strength.swift; sourceTree = "<group>"; };
+		16D1047A21B64E240055C572 /* TeamsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsViewController.swift; sourceTree = "<group>"; };
+		16D1047C21B64E320055C572 /* EditTeamTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTeamTableViewController.swift; sourceTree = "<group>"; };
+		16D1048021B64E5D0055C572 /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
+		16D1048221B700FF0055C572 /* AdminTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminTask.swift; sourceTree = "<group>"; };
+		16D1048421B73B6E0055C572 /* ProjectsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsViewController.swift; sourceTree = "<group>"; };
+		16D1048621B73BA00055C572 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		16D1048821B73C720055C572 /* AddProjectTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProjectTableViewController.swift; sourceTree = "<group>"; };
+		16D1048B21B742270055C572 /* ProjectTasksTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTasksTableViewController.swift; sourceTree = "<group>"; };
+		16D1048D21B743EF0055C572 /* ProjectTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTaskTableViewCell.swift; sourceTree = "<group>"; };
+		16D1048F21B743FA0055C572 /* ProjectTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTask.swift; sourceTree = "<group>"; };
+		16D1049121B747B70055C572 /* AddProjectTaskTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProjectTaskTableViewController.swift; sourceTree = "<group>"; };
+		16D1049821B76F8F0055C572 /* AddProjectTaskChooseTaskTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProjectTaskChooseTaskTableViewController.swift; sourceTree = "<group>"; };
+		16D1049A21B76FA10055C572 /* AddProjectTaskChooseWorkerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProjectTaskChooseWorkerTableViewController.swift; sourceTree = "<group>"; };
+		16D1049C21B76FAF0055C572 /* AddProjectTaskChooseTeamTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProjectTaskChooseTeamTableViewController.swift; sourceTree = "<group>"; };
+		16D104A021B771F60055C572 /* ProjectTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectTableViewController.swift; sourceTree = "<group>"; };
+		16D104A221B776680055C572 /* LabelCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCell.swift; sourceTree = "<group>"; };
+		16D104A421B77A1A0055C572 /* WorkerForTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerForTask.swift; sourceTree = "<group>"; };
+		16D104A621B795770055C572 /* WorkerForTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerForTaskTableViewCell.swift; sourceTree = "<group>"; };
+		16D104A821B7AA950055C572 /* TeamTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamTableViewController.swift; sourceTree = "<group>"; };
+		16D104AA21B83A240055C572 /* EditWorkerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWorkerTableViewController.swift; sourceTree = "<group>"; };
+		16D104AD21B849760055C572 /* AdminWorkersTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminWorkersTableViewController.swift; sourceTree = "<group>"; };
+		16D104AF21B8498B0055C572 /* AdminWorkerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminWorkerTableViewController.swift; sourceTree = "<group>"; };
+		16D104B121B84CE00055C572 /* AdminEditWorkerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminEditWorkerTableViewController.swift; sourceTree = "<group>"; };
+		16D104B321B850F20055C572 /* AddTeamTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTeamTableViewController.swift; sourceTree = "<group>"; };
+		16D104B721B856C40055C572 /* AdminWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminWorker.swift; sourceTree = "<group>"; };
+		16D104BB21B867FD0055C572 /* AdminAddWorkerTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdminAddWorkerTableViewController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		162E40D521B38DD100B6BE70 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		162E40CF21B38DD100B6BE70 = {
+			isa = PBXGroup;
+			children = (
+				162E40DA21B38DD100B6BE70 /* project-pro */,
+				162E40D921B38DD100B6BE70 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		162E40D921B38DD100B6BE70 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				162E40D821B38DD100B6BE70 /* project-pro.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		162E40DA21B38DD100B6BE70 /* project-pro */ = {
+			isa = PBXGroup;
+			children = (
+				163571A121B476FC006576EE /* App Delegate */,
+				1635719D21B47690006576EE /* Auth */,
+				1635719E21B47697006576EE /* Worker */,
+				1635719F21B476BE006576EE /* Manager */,
+				163571A021B476C7006576EE /* Admin */,
+				162E40E421B38DD200B6BE70 /* LaunchScreen.storyboard */,
+				162E40E721B38DD200B6BE70 /* Info.plist */,
+				162E40ED21B38E7800B6BE70 /* Endpoint.swift */,
+				163571A921B47BB4006576EE /* User.swift */,
+				163571AB21B47DE6006576EE /* Authorization.swift */,
+				16D1046621B5C2060055C572 /* Assets.xcassets */,
+				16D1046821B5C3ED0055C572 /* TextFieldCell.swift */,
+				16D104A221B776680055C572 /* LabelCell.swift */,
+				16D1047621B63BD00055C572 /* Extensions.swift */,
+			);
+			path = "project-pro";
+			sourceTree = "<group>";
+		};
+		1635719D21B47690006576EE /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				162E40DF21B38DD100B6BE70 /* Auth.storyboard */,
+				1635719B21B47679006576EE /* AuthViewController.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		1635719E21B47697006576EE /* Worker */ = {
+			isa = PBXGroup;
+			children = (
+				163571A221B47A98006576EE /* Worker.storyboard */,
+				163571C321B4E9F9006576EE /* Tasks */,
+				163571BF21B4CE45006576EE /* Strengths */,
+				163571C021B4CE53006576EE /* Profile */,
+			);
+			path = Worker;
+			sourceTree = "<group>";
+		};
+		1635719F21B476BE006576EE /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				163571A621B47ABE006576EE /* Manager.storyboard */,
+				16D1046521B599C70055C572 /* Projects */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		163571A021B476C7006576EE /* Admin */ = {
+			isa = PBXGroup;
+			children = (
+				163571A421B47AB5006576EE /* Admin.storyboard */,
+				16D104AC21B848FB0055C572 /* Organization Workers */,
+				16D1045E21B538DD0055C572 /* Teams */,
+				16D1045D21B538C40055C572 /* Tasks */,
+				16D1045C21B538B60055C572 /* Strengths */,
+				16D1045221B537A40055C572 /* Causes */,
+				16D1044721B531110055C572 /* Donations */,
+				16D1043C21B50A1B0055C572 /* Donors */,
+			);
+			path = Admin;
+			sourceTree = "<group>";
+		};
+		163571A121B476FC006576EE /* App Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				162E40DB21B38DD100B6BE70 /* AppDelegate.swift */,
+			);
+			path = "App Delegate";
+			sourceTree = "<group>";
+		};
+		163571BF21B4CE45006576EE /* Strengths */ = {
+			isa = PBXGroup;
+			children = (
+				163571AF21B4AB90006576EE /* WorkerStrengthsViewController.swift */,
+				163571BD21B4CE38006576EE /* StrengthTableViewCell.swift */,
+				163571BB21B4CC97006576EE /* WorkerStrength.swift */,
+				163571C121B4D398006576EE /* EditWorkerStrengthsViewController.swift */,
+			);
+			path = Strengths;
+			sourceTree = "<group>";
+		};
+		163571C021B4CE53006576EE /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				163571B121B4AB99006576EE /* WorkerProfileViewController.swift */,
+				163571B521B4B1F1006576EE /* EditWorkerProfileViewController.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		163571C321B4E9F9006576EE /* Tasks */ = {
+			isa = PBXGroup;
+			children = (
+				163571AD21B4AB84006576EE /* WorkerTasksViewController.swift */,
+				163571C421B4EB05006576EE /* AssignedTasksViewController.swift */,
+				163571C621B4EB14006576EE /* DesiredTasksViewController.swift */,
+				163571CC21B4F40B006576EE /* EditWorkerDesiredTasksTableViewController.swift */,
+				163571C821B4EDF2006576EE /* Task.swift */,
+			);
+			path = Tasks;
+			sourceTree = "<group>";
+		};
+		16D1043C21B50A1B0055C572 /* Donors */ = {
+			isa = PBXGroup;
+			children = (
+				16D1043D21B50A2F0055C572 /* DonorsViewController.swift */,
+				16D1044321B5165E0055C572 /* AddDonorTableViewController.swift */,
+				16D1047421B5D7530055C572 /* EditDonorViewController.swift */,
+				16D1044121B5124D0055C572 /* DonorTableViewCell.swift */,
+				16D1043F21B50ABD0055C572 /* Donor.swift */,
+			);
+			path = Donors;
+			sourceTree = "<group>";
+		};
+		16D1044721B531110055C572 /* Donations */ = {
+			isa = PBXGroup;
+			children = (
+				16D1044821B531290055C572 /* DonationsViewController.swift */,
+				16D1044C21B531850055C572 /* AddDonationViewController.swift */,
+				16D1044E21B531C30055C572 /* EditDonationViewController.swift */,
+				16D1045021B533070055C572 /* DonationTableViewCell.swift */,
+				16D1044A21B531380055C572 /* Donation.swift */,
+			);
+			path = Donations;
+			sourceTree = "<group>";
+		};
+		16D1045221B537A40055C572 /* Causes */ = {
+			isa = PBXGroup;
+			children = (
+				16D1045521B537C00055C572 /* CausesViewController.swift */,
+				16D1045721B537CE0055C572 /* AddCauseTableViewController.swift */,
+				16D1045921B537ED0055C572 /* EditCauseViewController.swift */,
+				16D1046A21B5C65B0055C572 /* Cause.swift */,
+			);
+			path = Causes;
+			sourceTree = "<group>";
+		};
+		16D1045C21B538B60055C572 /* Strengths */ = {
+			isa = PBXGroup;
+			children = (
+				16D1046321B53A320055C572 /* StrengthsViewController.swift */,
+				16D1045F21B539840055C572 /* AddStrengthViewController.swift */,
+				16D1046121B53A1E0055C572 /* EditStrengthViewController.swift */,
+				16D1047821B645DF0055C572 /* Strength.swift */,
+			);
+			path = Strengths;
+			sourceTree = "<group>";
+		};
+		16D1045D21B538C40055C572 /* Tasks */ = {
+			isa = PBXGroup;
+			children = (
+				16D1046C21B5C8390055C572 /* TasksViewController.swift */,
+				16D1046E21B5C84D0055C572 /* AddTaskViewController.swift */,
+				16D1047021B5C8580055C572 /* EditTaskViewController.swift */,
+				16D1048221B700FF0055C572 /* AdminTask.swift */,
+			);
+			path = Tasks;
+			sourceTree = "<group>";
+		};
+		16D1045E21B538DD0055C572 /* Teams */ = {
+			isa = PBXGroup;
+			children = (
+				16D1047A21B64E240055C572 /* TeamsViewController.swift */,
+				16D104B321B850F20055C572 /* AddTeamTableViewController.swift */,
+				16D104A821B7AA950055C572 /* TeamTableViewController.swift */,
+				16D1047C21B64E320055C572 /* EditTeamTableViewController.swift */,
+				16D104AA21B83A240055C572 /* EditWorkerTableViewController.swift */,
+				16D1048021B64E5D0055C572 /* Team.swift */,
+			);
+			path = Teams;
+			sourceTree = "<group>";
+		};
+		16D1046521B599C70055C572 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				16D1048421B73B6E0055C572 /* ProjectsViewController.swift */,
+				16D104A021B771F60055C572 /* ProjectTableViewController.swift */,
+				16D1048821B73C720055C572 /* AddProjectTableViewController.swift */,
+				16D1048621B73BA00055C572 /* Project.swift */,
+				16D1048A21B73DD80055C572 /* Project Tasks */,
+			);
+			path = Projects;
+			sourceTree = "<group>";
+		};
+		16D1048A21B73DD80055C572 /* Project Tasks */ = {
+			isa = PBXGroup;
+			children = (
+				16D1048B21B742270055C572 /* ProjectTasksTableViewController.swift */,
+				16D1048D21B743EF0055C572 /* ProjectTaskTableViewCell.swift */,
+				16D1049721B76F700055C572 /* Add Project Task */,
+				16D1048F21B743FA0055C572 /* ProjectTask.swift */,
+			);
+			path = "Project Tasks";
+			sourceTree = "<group>";
+		};
+		16D1049721B76F700055C572 /* Add Project Task */ = {
+			isa = PBXGroup;
+			children = (
+				16D1049121B747B70055C572 /* AddProjectTaskTableViewController.swift */,
+				16D1049821B76F8F0055C572 /* AddProjectTaskChooseTaskTableViewController.swift */,
+				16D1049C21B76FAF0055C572 /* AddProjectTaskChooseTeamTableViewController.swift */,
+				16D1049A21B76FA10055C572 /* AddProjectTaskChooseWorkerTableViewController.swift */,
+				16D104A621B795770055C572 /* WorkerForTaskTableViewCell.swift */,
+				16D104A421B77A1A0055C572 /* WorkerForTask.swift */,
+			);
+			path = "Add Project Task";
+			sourceTree = "<group>";
+		};
+		16D104AC21B848FB0055C572 /* Organization Workers */ = {
+			isa = PBXGroup;
+			children = (
+				16D104AD21B849760055C572 /* AdminWorkersTableViewController.swift */,
+				16D104AF21B8498B0055C572 /* AdminWorkerTableViewController.swift */,
+				16D104B121B84CE00055C572 /* AdminEditWorkerTableViewController.swift */,
+				16D104BB21B867FD0055C572 /* AdminAddWorkerTableViewController.swift */,
+				16D104B721B856C40055C572 /* AdminWorker.swift */,
+			);
+			name = "Organization Workers";
+			path = Workers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		162E40D721B38DD100B6BE70 /* project-pro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 162E40EA21B38DD200B6BE70 /* Build configuration list for PBXNativeTarget "project-pro" */;
+			buildPhases = (
+				162E40D421B38DD100B6BE70 /* Sources */,
+				162E40D521B38DD100B6BE70 /* Frameworks */,
+				162E40D621B38DD100B6BE70 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "project-pro";
+			productName = "project-pro";
+			productReference = 162E40D821B38DD100B6BE70 /* project-pro.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		162E40D021B38DD100B6BE70 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1010;
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Anton Lysov";
+				TargetAttributes = {
+					162E40D721B38DD100B6BE70 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = 162E40D321B38DD100B6BE70 /* Build configuration list for PBXProject "project-pro" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 162E40CF21B38DD100B6BE70;
+			productRefGroup = 162E40D921B38DD100B6BE70 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				162E40D721B38DD100B6BE70 /* project-pro */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		162E40D621B38DD100B6BE70 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				162E40E621B38DD200B6BE70 /* LaunchScreen.storyboard in Resources */,
+				163571A521B47AB5006576EE /* Admin.storyboard in Resources */,
+				163571A721B47ABE006576EE /* Manager.storyboard in Resources */,
+				163571A321B47A98006576EE /* Worker.storyboard in Resources */,
+				16D1046721B5C2060055C572 /* Assets.xcassets in Resources */,
+				162E40E121B38DD100B6BE70 /* Auth.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		162E40D421B38DD100B6BE70 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				163571C221B4D398006576EE /* EditWorkerStrengthsViewController.swift in Sources */,
+				163571B621B4B1F1006576EE /* EditWorkerProfileViewController.swift in Sources */,
+				16D104A321B776680055C572 /* LabelCell.swift in Sources */,
+				1635719C21B47679006576EE /* AuthViewController.swift in Sources */,
+				16D1044921B531290055C572 /* DonationsViewController.swift in Sources */,
+				16D1047921B645DF0055C572 /* Strength.swift in Sources */,
+				16D1045621B537C00055C572 /* CausesViewController.swift in Sources */,
+				16D1044F21B531C30055C572 /* EditDonationViewController.swift in Sources */,
+				16D1047D21B64E320055C572 /* EditTeamTableViewController.swift in Sources */,
+				16D104B221B84CE00055C572 /* AdminEditWorkerTableViewController.swift in Sources */,
+				16D104B421B850F20055C572 /* AddTeamTableViewController.swift in Sources */,
+				16D1048721B73BA00055C572 /* Project.swift in Sources */,
+				16D1049221B747B70055C572 /* AddProjectTaskTableViewController.swift in Sources */,
+				162E40EE21B38E7800B6BE70 /* Endpoint.swift in Sources */,
+				163571C721B4EB14006576EE /* DesiredTasksViewController.swift in Sources */,
+				16D104B821B856C40055C572 /* AdminWorker.swift in Sources */,
+				163571C921B4EDF2006576EE /* Task.swift in Sources */,
+				16D1046021B539840055C572 /* AddStrengthViewController.swift in Sources */,
+				16D1045821B537CE0055C572 /* AddCauseTableViewController.swift in Sources */,
+				16D104A521B77A1A0055C572 /* WorkerForTask.swift in Sources */,
+				163571CD21B4F40B006576EE /* EditWorkerDesiredTasksTableViewController.swift in Sources */,
+				16D104AB21B83A240055C572 /* EditWorkerTableViewController.swift in Sources */,
+				16D1047B21B64E240055C572 /* TeamsViewController.swift in Sources */,
+				16D1044221B5124D0055C572 /* DonorTableViewCell.swift in Sources */,
+				16D104AE21B849760055C572 /* AdminWorkersTableViewController.swift in Sources */,
+				163571C521B4EB05006576EE /* AssignedTasksViewController.swift in Sources */,
+				16D1043E21B50A2F0055C572 /* DonorsViewController.swift in Sources */,
+				16D1044021B50ABD0055C572 /* Donor.swift in Sources */,
+				16D104A121B771F60055C572 /* ProjectTableViewController.swift in Sources */,
+				16D1046D21B5C8390055C572 /* TasksViewController.swift in Sources */,
+				163571B221B4AB99006576EE /* WorkerProfileViewController.swift in Sources */,
+				16D104B021B8498B0055C572 /* AdminWorkerTableViewController.swift in Sources */,
+				16D1048121B64E5D0055C572 /* Team.swift in Sources */,
+				16D1049021B743FA0055C572 /* ProjectTask.swift in Sources */,
+				163571BC21B4CC97006576EE /* WorkerStrength.swift in Sources */,
+				162E40DC21B38DD100B6BE70 /* AppDelegate.swift in Sources */,
+				16D1048521B73B6E0055C572 /* ProjectsViewController.swift in Sources */,
+				16D1049B21B76FA10055C572 /* AddProjectTaskChooseWorkerTableViewController.swift in Sources */,
+				163571AC21B47DE6006576EE /* Authorization.swift in Sources */,
+				16D1049921B76F8F0055C572 /* AddProjectTaskChooseTaskTableViewController.swift in Sources */,
+				16D1047521B5D7540055C572 /* EditDonorViewController.swift in Sources */,
+				16D1045121B533070055C572 /* DonationTableViewCell.swift in Sources */,
+				163571BE21B4CE38006576EE /* StrengthTableViewCell.swift in Sources */,
+				163571AA21B47BB4006576EE /* User.swift in Sources */,
+				16D1048C21B742270055C572 /* ProjectTasksTableViewController.swift in Sources */,
+				16D1045A21B537ED0055C572 /* EditCauseViewController.swift in Sources */,
+				16D1046F21B5C84D0055C572 /* AddTaskViewController.swift in Sources */,
+				16D1046B21B5C65B0055C572 /* Cause.swift in Sources */,
+				16D1046421B53A320055C572 /* StrengthsViewController.swift in Sources */,
+				16D104A721B795770055C572 /* WorkerForTaskTableViewCell.swift in Sources */,
+				16D1048921B73C720055C572 /* AddProjectTableViewController.swift in Sources */,
+				163571B021B4AB90006576EE /* WorkerStrengthsViewController.swift in Sources */,
+				16D1049D21B76FAF0055C572 /* AddProjectTaskChooseTeamTableViewController.swift in Sources */,
+				16D1048E21B743EF0055C572 /* ProjectTaskTableViewCell.swift in Sources */,
+				16D1044B21B531380055C572 /* Donation.swift in Sources */,
+				16D1046921B5C3ED0055C572 /* TextFieldCell.swift in Sources */,
+				16D1047121B5C8580055C572 /* EditTaskViewController.swift in Sources */,
+				16D1047721B63BD00055C572 /* Extensions.swift in Sources */,
+				16D104A921B7AA950055C572 /* TeamTableViewController.swift in Sources */,
+				16D1044D21B531850055C572 /* AddDonationViewController.swift in Sources */,
+				16D104BC21B867FD0055C572 /* AdminAddWorkerTableViewController.swift in Sources */,
+				16D1048321B700FF0055C572 /* AdminTask.swift in Sources */,
+				16D1044421B5165E0055C572 /* AddDonorTableViewController.swift in Sources */,
+				16D1046221B53A1E0055C572 /* EditStrengthViewController.swift in Sources */,
+				163571AE21B4AB84006576EE /* WorkerTasksViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		162E40DF21B38DD100B6BE70 /* Auth.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				162E40E021B38DD100B6BE70 /* Base */,
+			);
+			name = Auth.storyboard;
+			sourceTree = "<group>";
+		};
+		162E40E421B38DD200B6BE70 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				162E40E521B38DD200B6BE70 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		162E40E821B38DD200B6BE70 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		162E40E921B38DD200B6BE70 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		162E40EB21B38DD200B6BE70 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4L3XSQE4Z5;
+				INFOPLIST_FILE = "project-pro/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.antonlysov.cpsc471;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		162E40EC21B38DD200B6BE70 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4L3XSQE4Z5;
+				INFOPLIST_FILE = "project-pro/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.antonlysov.cpsc471;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		162E40D321B38DD100B6BE70 /* Build configuration list for PBXProject "project-pro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				162E40E821B38DD200B6BE70 /* Debug */,
+				162E40E921B38DD200B6BE70 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		162E40EA21B38DD200B6BE70 /* Build configuration list for PBXNativeTarget "project-pro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				162E40EB21B38DD200B6BE70 /* Debug */,
+				162E40EC21B38DD200B6BE70 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 162E40D021B38DD100B6BE70 /* Project object */;
+}
