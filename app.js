@@ -494,7 +494,7 @@ function connectToDB() {
     var connection = mysql.createConnection({
         host: 'localhost',
         user: 'root',
-        password: 'root',
+        password: 'rootroot',
         database: 'ProjectProDB'
     });
     console.log('connection opened');
